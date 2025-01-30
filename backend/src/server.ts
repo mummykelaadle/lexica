@@ -1,4 +1,6 @@
+import express from 'express';
 import dotenv from 'dotenv';
+import logger from './utils/logger';
 import cors from 'cors';
 
 // Load environment variables
@@ -8,10 +10,12 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors());
+
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.info(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });
 
