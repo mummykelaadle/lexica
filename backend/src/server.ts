@@ -1,7 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import logger from './utils/logger';
 import cors from 'cors';
+
+import logger from './utils/logger';
+import connectDB from './config/db';
 
 // Load environment variables
 dotenv.config();
@@ -11,6 +13,9 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+// MongoDB connection
+connectDB();
 
 
 // Start server
