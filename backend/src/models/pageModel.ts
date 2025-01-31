@@ -1,17 +1,17 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IBook extends Document {
-  title: string;
-  pages: Schema.Types.ObjectId[];
+interface IPage extends Document {
+  pageNumber: number;
+  words: Schema.Types.ObjectId[];
 }
 
-const bookSchema = new Schema<IBook>({
-  title: { type: String, required: true },
-  pages: [{ type: Schema.Types.ObjectId, ref: 'Page' }]
+const pageSchema = new Schema<IPage>({
+  pageNumber: { type: Number, required: true },
+  words: [{ type: Schema.Types.ObjectId, ref: 'Word' }]
 });
 
-const Book = mongoose.model<IBook>('Book', bookSchema);
+const Page = mongoose.model<IPage>('Page', pageSchema);
 
-export default Book;
+export default Page;
 
 

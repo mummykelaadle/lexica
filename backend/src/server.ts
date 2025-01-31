@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
+import pdfRoutes from './routes/pdfRoutes';
 import logger from './utils/logger';
 import connectDB from './config/db';
 
@@ -13,6 +14,9 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+// Use routes
+app.use('/api/v1/pdf', pdfRoutes);
 
 // MongoDB connection
 connectDB();
