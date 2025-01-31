@@ -5,7 +5,7 @@ import { UserButton } from "@clerk/clerk-react";
 
 function Header() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="flex flex-col bg-gray-100">
     {/* Navbar */}
     <Navbar className="bg-white shadow-md px-6 py-4">
       <NavbarBrand>
