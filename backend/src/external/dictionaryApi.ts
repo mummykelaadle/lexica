@@ -14,10 +14,12 @@ const API_KEY = process.env.MERRIAM_WEBSTER_API_KEY;
  */
 const fetchWordData = async (word: string) => {
   const url = `${API_BASE_URL}/${encodeURIComponent(word)}?key=${API_KEY}`;
+  // logger.info(`Fetching word with url: ${url}`);
 
   try {
     logger.info(`Fetching data for word: ${word}`);
     const response = await axios.get(url);
+    // logger.info(`Response data: ${JSON.stringify(response.data, null, 2)}`);
 
     if (!Array.isArray(response.data) || response.data.length === 0 || !response.data[0].meta) {
       logger.warn(`No valid results found for word: ${word}`);
@@ -33,7 +35,7 @@ const fetchWordData = async (word: string) => {
       exampleSentence: entry.def?.[0]?.sseq?.[0]?.[0]?.[1]?.dt?.[1]?.[1]?.[0]?.t || '',
     };
 
-    logger.info(`Parsed word data: ${JSON.stringify(wordData, null, 2)}`);
+    // logger.info(`Parsed word data: ${JSON.stringify(wordData, null, 2)}`);
     return wordData;
   } catch (error: any) {
     logger.error(`Error fetching word data: ${error.message}`);
