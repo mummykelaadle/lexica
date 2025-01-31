@@ -1,33 +1,24 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
-import bcrypt from "bcryptjs";
+import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  comparePassword(candidatePassword: string): Promise<boolean>;
+interface IWord extends Document {
+  word: string;
+  meanings: string[];
+  synonyms: string[];
+  antonyms: string[];
+  exampleSentences: string[];
+  difficulty: number;
 }
 
-const userSchema = new Schema<IUser>({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+const wordSchema = new Schema<IWord>({
+  word: { type: String, required: true, unique: true },
+  meanings: { type: [String], required: true },
+  synonyms: { type: [String], default: [] },
+  antonyms: { type: [String], default: [] },
+  exampleSentences: { type: [String], default: [] },
+  difficulty: { type: Number, required: true, min: 0, max: 1 }
 });
 
-userSchema.pre("save", async function(next) {
-  if (!this.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+const Word = mongoose.model<IWord>('Word', wordSchema);
 
-// Method to compare hashed passwords
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
-
-// Create and export the User model
-const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
-
-export default User;
+export default Word;
 
