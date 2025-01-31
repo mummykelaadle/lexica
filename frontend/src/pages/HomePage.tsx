@@ -3,10 +3,12 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
-import { SignInButton, SignUpButton, useUser } from "@clerk/clerk-react";  // Import Clerk components
+import { useUser } from "@clerk/clerk-react";  // Import Clerk components
+import { useNavigate } from "react-router-dom";  // Import useNavigate hook
 
 export default function Lexica() {
   const { isLoaded, user } = useUser();  // Access user state from Clerk
+  const navigate = useNavigate();  // Get navigate function
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -22,13 +24,14 @@ export default function Lexica() {
             {isLoaded && !user ? (
               <>
                 {/* SignIn Button */}
-                <SignInButton>
-                  <Button variant="outline">Sign In</Button>
-                </SignInButton>
-                {/* SignUp Button */}
-                <SignUpButton>
-                  <Button variant="outline">Sign Up</Button>
-                </SignUpButton>
+                <Button variant="outline" onClick={() => navigate('/login')}>
+                  Sign In
+                </Button>
+                {/* Manually navigate to the register page */}
+                <Button variant="outline" onClick={() => navigate('/register')}>
+                  Sign Up
+                </Button>
+          
               </>
             ) : (
               <Button variant="outline" onClick={() => window.location.href = '/logout'}>Logout</Button>
