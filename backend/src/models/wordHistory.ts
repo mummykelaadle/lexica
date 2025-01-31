@@ -5,14 +5,14 @@ const wordHistorySchema = new mongoose.Schema({
         type: String,
         required: true,
         index: true,
+        unique:true,    
     },
-    wordIds: [
+    wordEntries: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Word",
-            required: true,
-        }
-    ],
+          wordId: { type: mongoose.Schema.Types.ObjectId, ref: "Word", required: true },
+          addedAt: { type: Date, required: true },
+        },
+      ],
     createdAt: {
         type: Date,
         default: Date.now,
