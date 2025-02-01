@@ -5,6 +5,7 @@ import cors from 'cors';
 import pdfRoutes from './routes/pdfRoutes';
 import logger from './utils/logger';
 import connectDB from './config/db';
+import { clerkMiddleware,requireAuth  } from '@clerk/express'
 
 // Load environment variables
 dotenv.config();
@@ -14,6 +15,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(clerkMiddleware())
 
 // Use routes
 app.use('/api/v1/pdf', pdfRoutes);
