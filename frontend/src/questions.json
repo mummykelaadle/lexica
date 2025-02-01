@@ -1,0 +1,47 @@
+[
+    {
+      "id": 1,
+      "text": "What is the meaning of 'extravagant'?",
+      "options": [
+        "Lavish and excessive",
+        "Simple and modest",
+        "Ordinary and common",
+        "Cheap and frugal"
+      ],
+      "correctAnswer": "Lavish and excessive"
+    },
+    {
+      "id": 2,
+      "text": "Which of the following is a synonym of 'extravagant'?",
+      "options": [
+        "Opulent",
+        "Meager",
+        "Sparse",
+        "Minimal"
+      ],
+      "correctAnswer": "Opulent"
+    },
+    {
+      "id": 3,
+      "text": "What is an antonym of 'extravagant'?",
+      "options": [
+        "Frugal",
+        "Luxurious",
+        "Lavish",
+        "Grand"
+      ],
+      "correctAnswer": "Frugal"
+    },
+    {
+      "id": 4,
+      "text": "Which sentence best uses 'extravagant' correctly?",
+      "options": [
+        "She bought an extravagant dress that cost a fortune.",
+        "His lifestyle was extravagant, filled with simple meals and minimal spending.",
+        "The extravagant book was so thin that nobody noticed it.",
+        "They made an extravagant effort to reduce their expenses."
+      ],
+      "correctAnswer": "She bought an extravagant dress that cost a fortune."
+    }
+  ]
+  

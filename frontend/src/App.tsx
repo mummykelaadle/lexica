@@ -5,6 +5,7 @@ import WordMeaningPage from "./pages/WordMeaningPage";
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import Quiz from './pages/Quiz';
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App: React.FC = () => {
@@ -16,6 +17,7 @@ const App: React.FC = () => {
       {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/quiz" element={<Quiz />} />
           <Route path="/meaning/:word" element={<WordMeaningPage />} /> {/* Home Page */}
         </Route> 
       </Routes>
