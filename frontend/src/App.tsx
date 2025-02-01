@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Quiz from './pages/Quiz';
 import ProtectedRoute from "./components/ProtectedRoute";
+import WordHistory from "./pages/WordHistory";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/meaning/:word" element={<WordMeaningPage />} /> {/* Home Page */}
+          <Route path="/history" element={<WordHistory />} /> {/* Home Page */}
         </Route> 
       </Routes>
   );
