@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard';
 import Quiz from './pages/Quiz';
 import ProtectedRoute from "./components/ProtectedRoute";
 import WordHistory from "./pages/WordHistory";
+import { TestAddWordToHistoryPage } from "./pages/TestAddWordToHistory";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/meaning/:word" element={<WordMeaningPage />} /> {/* Home Page */}
           <Route path="/history" element={<WordHistory />} /> {/* Home Page */}
+          <Route path="/test" element={<TestAddWordToHistoryPage />} /> {/* Home Page */}
         </Route> 
       </Routes>
   );
