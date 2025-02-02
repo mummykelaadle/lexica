@@ -1,45 +1,66 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { getHistory } from '../lib/getHistory';
 
-interface Word {
-  word: string;
-  definition: string;
-  dateLearned: Date;
+interface WordId extends Object{
+  _v:number;
+  _id:string;
+  difficulty:number;
+  meaning:string;
+  word:string;
+}
+
+interface WordEntry {
+  _id:string;
+  addedAt: string;
+  wordId: WordId;
 }
 
 const WordHistory: React.FC = () => {
-  const [words, setWords] = useState<Word[]>([]);
+  const [words, setWords] = useState<WordEntry[]>([]);
 
   useEffect(() => {
-    // to-do: Fetch words data from API
-    setWords([
-      { word: 'Ephemeral', definition: 'Lasting for a very short time.', dateLearned: new Date() },
-      { word: 'Ineffable', definition: 'Too great to be expressed in words.', dateLearned: new Date(Date.now() - 86400000) },
-    ]);
+    async function fetchWordHistory() {
+      try {
+        const history = await getHistory();
+        console.log(`Fetched history from backend`);
+        console.log(`----------------------------`);
+        console.log(history.wordEntries);
+        setWords(history.wordEntries || []);
+      } catch (error) {
+        console.error("Error fetching word history:", error);
+      }
+    }
+
+    fetchWordHistory();
   }, []);
 
-  const categorizeWords = (words: Word[]) => {
-    const today = new Date();
-    const yesterday = new Date(Date.now() - 86400000);
+  const categorizeWords = (words: WordEntry[]) => {
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
 
     return {
-      today: words.filter(word => word.dateLearned.toDateString() === today.toDateString()),
-      yesterday: words.filter(word => word.dateLearned.toDateString() === yesterday.toDateString()),
-      thisMonth: words.filter(word => word.dateLearned.getMonth() === today.getMonth() && word.dateLearned.getFullYear() === today.getFullYear()),
+      today: words.filter(word => new Date(word.addedAt).toDateString() === today),
+      yesterday: words.filter(word => new Date(word.addedAt).toDateString() === yesterday),
+      thisMonth: words.filter(word => {
+        const date = new Date(word.addedAt);
+        const now = new Date();
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      }),
       allTime: words,
     };
   };
 
   const categorizedWords = categorizeWords(words);
 
-  const renderWordCards = (words: Word[]) => (
+  const renderWordCards = (words: WordEntry[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {words.map((word, index) => (
+      {words.map((entry, index) => (
         <Card key={index} className="rounded-xl shadow-lg border border-gray-300 bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
           <CardContent className="p-6">
-            <h3 className="text-xl font-bold text-brown-700">{word.word}</h3>
-            <p className="text-gray-600 text-sm mt-2">{word.definition}</p>
+            <h3 className="text-xl font-bold text-brown-700">{entry.wordId.word}</h3>
+            <p className="text-gray-600 text-sm mt-2">{entry.wordId.meaning}</p>
           </CardContent>
         </Card>
       ))}
@@ -53,7 +74,7 @@ const WordHistory: React.FC = () => {
           <h1 className="text-5xl italic text-brown-800 mb-8 text-center">Word History</h1>
           <Separator className="mb-6 border-gray-400" />
 
-          {['today', 'yesterday', 'thisMonth', 'allTime'].map((period, index) => (
+          {["today", "yesterday", "thisMonth", "allTime"].map((period, index) => (
             <div
               key={period}
               className={`p-6 rounded-lg shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
@@ -66,7 +87,6 @@ const WordHistory: React.FC = () => {
                 <p className="text-gray-500 italic">No words learned in this period.</p>
               )}
             </div>
-
           ))}
         </CardContent>
       </Card>

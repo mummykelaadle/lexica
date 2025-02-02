@@ -19,6 +19,14 @@ app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware())
 
+//cors configuration
+app.use(cors({
+  origin: 'http://localhost:5173', // Allows only requests from this origin
+  credentials: true, // Allow credentials (cookies, auth headers)
+  methods: 'GET, POST, PUT, DELETE',
+  allowedHeaders: 'Content-Type, Authorization',
+}));
+
 // Use routes
 app.use('/api/v1/pdf', pdfRoutes);
 app.use('/api/v1/user', userRoutes);
