@@ -41,7 +41,7 @@ const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
 
 const getWordHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { userId } = req.params;
+      const { userId } = getAuth(req); // Get userId from Clerk
         
         const wordHistory = await WordHistory.findOne({ userId })
             .populate("wordEntries.wordId")
