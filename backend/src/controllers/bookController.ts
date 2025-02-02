@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import Book from '../models/bookModel';
+import Page from '../models/pageModel';
+import mongoose, { Document } from 'mongoose';
 
 /**
  * Retrieves a book by its ID along with its associated pages and words.
@@ -86,4 +88,58 @@ const getBookPages = (req: Request, res: Response) => {
     });
 };
 
-export default { getBookWithDetails, getBookPages };
+/**
+ * Interface representing a page in a book.
+ *
+ * @interface IPage
+ * @extends Document
+ *
+ * @property {mongoose.Types.ObjectId} bookId - The ID of the book this page belongs to.
+ * @property {Date} createdAt - The creation date of the page.
+ * @property {number} pageNumber - The page number in the book.
+ **/
+interface IPage extends Document {
+  bookId: mongoose.Types.ObjectId;
+  createdAt: Date;
+  pageNumber: number;
+}
+
+/**
+ * Sorts the pages of a book by their creation date and updates their page numbers accordingly.
+ *
+ * This function retrieves all pages associated with a given book ID, sorts them by the 
+ * `createdAt` field in ascending order, and then updates each page's `pageNumber` 
+ * field based on their sorted position. The function performs a bulk update to optimize 
+ * the database operations.
+ *
+ * @param {string} bookId - The ID of the book whose pages are to be sorted and
+**/
+const sortAndUpdatePages = (bookId: string): Promise<void> => {
+  // Step 1: Retrieve and sort pages using aggregation
+  return Page.aggregate<IPage>([
+      { $match: { bookId: bookId } }, // Match pages for the specific book
+      { $sort: { createdAt: 1 } }, // Sort by createdAt or any other field
+      { $project: { _id: 1 } } // Project only the _id field
+  ])
+  .then((sortedPages) => {
+      // Step 2: Update the pageNumber field based on the sorted order
+      const bulkOps = sortedPages.map((page, index) => ({
+          updateOne: {
+              filter: { _id: page._id },
+              update: { $set: { pageNumber: index + 1 } }
+          }
+      }));
+
+      // Execute bulk update
+      return Page.bulkWrite(bulkOps);
+  })
+  .then(() => {
+      console.log('Pages sorted and updated successfully.');
+  })
+  .catch((error) => {
+      console.error('Error sorting and updating pages:', error);
+      throw error; // Rethrow the error to handle it in the calling function
+  });
+};
+
+export default { getBookWithDetails, getBookPages, sortAndUpdatePages };
