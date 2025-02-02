@@ -1,13 +1,13 @@
 
 import DropZone from "./DropZone";
 import Header from "./Header";
-import BlogList from "./BlogList";
+import BookList from "./BookList";
 export default function Dashboard(){
     return (
         <div>
             <Header />
             <DropZone />
-            <BlogList />
+            <BookList />
         </div>
        
     )

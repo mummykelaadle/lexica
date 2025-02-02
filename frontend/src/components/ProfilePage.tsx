@@ -1,4 +1,4 @@
-import { UserProfile, useClerk } from "@clerk/clerk-react";
+import { UserProfile} from "@clerk/clerk-react";
 
 export default function ProfilePage() {
 
