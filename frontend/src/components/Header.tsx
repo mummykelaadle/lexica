@@ -1,9 +1,12 @@
 
-import { Navbar, NavbarBrand } from "@heroui/react";
+import { Button, Navbar, NavbarBrand } from "@heroui/react";
 import { Upload } from "lucide-react";
-import { UserButton } from "@clerk/clerk-react";
+import ProfilePage from "./ProfileButton";
+import { useClerk } from "@clerk/clerk-react";
 
 function Header() {
+  const { signOut } = useClerk();
+
   return (
     <div className="flex flex-col bg-gray-100">
     {/* Navbar */}
@@ -13,7 +16,16 @@ function Header() {
           <Upload className="mr-2" /> Lexica
         </span>
       </NavbarBrand>
-      <UserButton afterSignOutUrl="/"/>
+      {/* <UserButton afterSignOutUrl="/"/> */}
+     <ProfilePage />
+     
+      {/* Manual Logout Button */}
+      <Button 
+        onClick={() => signOut().then(() => window.location.href = "/")}
+      
+      >
+        Logout
+      </Button>
     </Navbar>
     </div>
   );

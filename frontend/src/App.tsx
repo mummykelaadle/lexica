@@ -9,6 +9,7 @@ import Quiz from './pages/Quiz';
 import ProtectedRoute from "./components/ProtectedRoute";
 import WordHistory from "./pages/WordHistory";
 import { TestAddWordToHistoryPage } from "./pages/TestAddWordToHistory";
+import ProfilePage from "./components/ProfilePage";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/meaning/:word" element={<WordMeaningPage />} /> {/* Home Page */}
           <Route path="/history" element={<WordHistory />} /> {/* Home Page */}
           <Route path="/test" element={<TestAddWordToHistoryPage />} /> {/* Home Page */}
+          <Route path="/profile" element={<ProfilePage />} />
         </Route> 
       </Routes>
   );
