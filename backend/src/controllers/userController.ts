@@ -38,3 +38,25 @@ const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ message: "Internal server error", error });
     }
   };
+
+const getWordHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { userId } = req.params;
+        
+        const wordHistory = await WordHistory.findOne({ userId })
+            .populate("wordEntries.wordId")
+            .lean();
+
+        if (!wordHistory) {
+            res.status(404).json({ message: "No word history found for this user." });
+            return;
+        }
+
+        res.status(200).json(wordHistory);
+    } catch (error) {
+        console.error("Error fetching word history:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export default {addWordToHistory,getWordHistory};
