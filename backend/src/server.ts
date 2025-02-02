@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import pdfRoutes from './routes/pdfRoutes';
+import userRoutes from './routes/userRoutes';
+
 import logger from './utils/logger';
 import connectDB from './config/db';
 import { clerkMiddleware,requireAuth  } from '@clerk/express'
@@ -19,6 +21,7 @@ app.use(clerkMiddleware())
 
 // Use routes
 app.use('/api/v1/pdf', pdfRoutes);
+app.use('/api/v1/user', userRoutes);
 
 // MongoDB connection
 connectDB();
