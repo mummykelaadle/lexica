@@ -16,12 +16,17 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Allows only requests from this origin
+  credentials: true, // Allow credentials (cookies, auth headers)
+  methods: ['GET, POST, PUT, DELETE','OPTIONS'],
+  allowedHeaders: 'Content-Type, Authorization',
+}));
 app.use(clerkMiddleware())
 
 // Use routes
-app.use('/api/v1/pdf', pdfRoutes);
-app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/pdf',requireAuth(), pdfRoutes);
+app.use('/api/v1/user',requireAuth(), userRoutes);
 
 // MongoDB connection
 connectDB();

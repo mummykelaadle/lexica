@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { languages } from "../lib/language";
+import { Volume2 } from "lucide-react";
 
 interface WordData {
   definitions: string[];
@@ -58,11 +59,24 @@ function WordMeaningPage() {
 
   const data = wordData || defaultData;
 
+  const pronounceWord = () => {
+    if (word) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = "en-IN";
+      speechSynthesis.speak(utterance);
+    }
+  };
+ 
   return (
     <div className="min-h-screen max-w-2xl mx-auto p-6 text-left font-serif bg-neutral-100 text-gray-900">
-  <h1 className="text-6xl font-extrabold capitalize mb-4 tracking-wide text-gray-800">{word}</h1>
-  <Badge className="text-lg px-4 py-1 mb-6">{data.pos}</Badge>
-
+ 
+  <div className="flex items-center gap-3 mb-4">
+        <h1 className="text-6xl font-extrabold capitalize tracking-wide text-gray-800">{word}</h1>
+        <button onClick={pronounceWord} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+          <Volume2 className="w-6 h-6 text-gray-700" />
+        </button>
+      </div>
+      <Badge className="text-lg px-4 py-1 mb-6">{data.pos}</Badge>
   {/* Translation Section */}
   <div className="bg-white shadow-md rounded-lg p-4 mb-6">
     <h2 className="text-xl font-semibold mb-2">Translate To:</h2>
@@ -89,20 +103,20 @@ function WordMeaningPage() {
     )}
   </div>
 
-  {/* Word Details Sections */}
-  <Section title="Definitions" items={data.definitions} />
-  <Section title="Usages" items={data.usages} />
-  <RowSection title="Synonyms" items={data.synonyms} />
-  <RowSection title="Antonyms" items={data.antonyms} />
-</div>
-
+      <Section title="Definitions" items={data.definitions} />
+      <Section title="Usages" items={data.usages} />
+      <RowSection title="Synonyms" items={data.synonyms} />
+      <RowSection title="Antonyms" items={data.antonyms} />
+    </div>
   );
 }
 
 function Section({ title, items }: { title: string; items: string[] }) {
   return (
     <Card className="p-4 mb-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl italic mb-2">{title}</h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-2xl italic mb-2">{title}</h2>
+      </div>
       <div className="space-y-2">
         {items.map((item, index) => (
           <p key={index} className="text-lg leading-relaxed">

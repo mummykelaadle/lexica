@@ -1,7 +1,7 @@
 
 import { Button, Navbar, NavbarBrand } from "@heroui/react";
 import { Upload } from "lucide-react";
-import ProfilePage from "./ProfileButton";
+import ProfileButton from "./ProfileButton";
 import { useClerk } from "@clerk/clerk-react";
 
 function Header() {
@@ -17,7 +17,7 @@ function Header() {
         </span>
       </NavbarBrand>
       {/* <UserButton afterSignOutUrl="/"/> */}
-     <ProfilePage />
+     <ProfileButton />
      
       {/* Manual Logout Button */}
       <Button 

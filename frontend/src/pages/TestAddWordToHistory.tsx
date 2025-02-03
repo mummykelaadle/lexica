@@ -16,7 +16,8 @@ const TestAddWordToHistoryPage = () => {
     setMessage("");
 
     try {
-      await addWordToHistory(wordId);
+      const response = await addWordToHistory(wordId);
+      console.log(response);
       setMessage("Word successfully added to history!");
     } catch (error) {
       setMessage("Failed to add word to history.");

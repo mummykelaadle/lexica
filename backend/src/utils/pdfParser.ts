@@ -1,5 +1,5 @@
 import * as pdfjsLib from 'pdfjs-dist';
-import fetchWordData from '../external/dictionaryApi'; // Your dictionary API handler
+import { fetchWordDetailsUsingDatamuse } from '../external/dictionaryApi'; // Your dictionary API handler
 import Word from '../models/wordModel'; // Importing the Mongoose model
 import logger from './logger';
 
@@ -32,7 +32,7 @@ async function extractWordsFromPdf(filePath: string): Promise<WordPageObject> {
         }
 
         // Fetch dictionary data
-        const wordData = await fetchWordData(word);
+        const wordData = await fetchWordDetailsUsingDatamuse(word);
         if (!wordData) {
           logger.warn(`No data found for word: "${word}"`);
           continue;

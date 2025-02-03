@@ -1,7 +1,7 @@
 
-import DropZone from "./DropZone";
-import Header from "./Header";
-import BookList from "./BookList";
+import DropZone from "../components/DropZone";
+import Header from "../components/Header";
+import BookList from "../components/BookList";
 export default function Dashboard(){
     return (
         <div>
