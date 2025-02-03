@@ -5,11 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";  // Import Clerk components
 import { useNavigate } from "react-router-dom";  // Import useNavigate hook
+import { useEffect } from "react";
 
 export default function Lexica() {
-  const { isLoaded, user } = useUser();  // Access user state from Clerk
+  const { isLoaded, user,isSignedIn } = useUser();  // Access user state from Clerk
   const { signOut } = useClerk();  // Get signOut function
   const navigate = useNavigate();  // Get navigate function
+
+  useEffect(()=>{
+    console.log(isSignedIn);
+    if(isSignedIn)
+      navigate('/dashboard');
+  },[isLoaded,isSignedIn,navigate])
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
