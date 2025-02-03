@@ -14,7 +14,11 @@ function DropZone() {
   const onDrop = async (acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]); // Store the first selected file
     setIsProcessing(true);
-    const res = await axios.post(`${backendBaseUrl}/api/v1/pdf/upload`, acceptedFiles[0]);
+    const formData = new FormData();
+    formData.append("file", acceptedFiles[0]);
+    const res = await axios.post(`${backendBaseUrl}/api/v1/pdf/upload`, formData,
+      { withCredentials: true, }
+    );
     setIsProcessing(false);
     alert(res.data.message);
   };
