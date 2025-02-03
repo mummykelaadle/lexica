@@ -142,4 +142,3 @@ const sortAndUpdatePages = (bookId: string): Promise<void> => {
   });
 };
 
-export default { getBookWithDetails, getBookPages, sortAndUpdatePages };
