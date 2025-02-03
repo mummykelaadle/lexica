@@ -78,7 +78,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
       exampleSentence
     };
 
-    logger.info(`Word data fetched: ${JSON.stringify(wordData)}`);
+    // logger.info(`Word data fetched: ${JSON.stringify(wordData)}`);
     return wordData;
   } catch (error) {
     logger.error(`Error fetching word data: ${error}`);
