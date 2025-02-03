@@ -11,25 +11,25 @@ const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
       const { userId } = getAuth(req); // Get userId from Clerk
   
       if (!userId) {
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" });// if the userId doesn't exist
         return;
       }
   
       if (!wordId) {
-        res.status(400).json({ message: "wordId is required" });
+        res.status(400).json({ message: "wordId is required" });// if wordId is missing
         return;
       }
   
-      const timestamp = new Date();
+      const timestamp = new Date();// create a timestamp
   
       // Add the word along with its timestamp
       const wordHistory = await WordHistory.findOneAndUpdate(
-        { userId },
+        { userId },// find a wordHistory with specified userId
         {
           $addToSet: { wordEntries: { wordId, addedAt: timestamp } }, // Add new entry only if it doesn’t already exist
           $setOnInsert: { createdAt: timestamp },
         },
-        { upsert: true, new: true, returnDocument: "after" }
+        { upsert: true, new: true, returnDocument: "after" }// upsert -> create a doc if one doesn' exist
       );
   
       res.status(200).json({ message: "Word added to history", wordHistory });
@@ -43,9 +43,9 @@ const getWordHistory = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = getAuth(req); // Get userId from Clerk
         
-        const wordHistory = await WordHistory.findOne({ userId })
-            .populate("wordEntries.wordId")
-            .lean();
+        const wordHistory = await WordHistory.findOne({ userId })// find word history of the specified user
+            .populate("wordEntries.wordId")// replace the reference of word with actual objects in the array
+            .lean();// actual objects should be json not moongoose documents
 
         if (!wordHistory) {
             res.status(404).json({ message: "No word history found for this user." });
