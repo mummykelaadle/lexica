@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Book from '../models/bookModel';
 import Page from '../models/pageModel';
 import mongoose, { Document } from 'mongoose';
+import logger from '../utils/logger';
 
 /**
  * Retrieves a book by its ID along with its associated pages and words.
@@ -16,7 +17,7 @@ import mongoose, { Document } from 'mongoose';
  */
 const getBookWithDetails = (req: Request, res: Response) => {
   const { bookId } = req.body;
-  console.log(bookId);
+  logger.info(`Fetching book with ID: ${bookId}`);
 
   // Fetch the book with pages and words populated
   Book.findById(bookId)
@@ -36,7 +37,7 @@ const getBookWithDetails = (req: Request, res: Response) => {
       res.status(200).json(book);
     })
     .catch((error) => {
-      console.error(error);
+      logger.error(`Error fetching book with ID: ${bookId}`, error);
       res.status(500).json({ message: "Internal server error", error });
     });
 };
@@ -70,7 +71,7 @@ const getBookPages = (req: Request, res: Response) => {
   Book.findById(bookId)
     .populate({
       path: 'pages',
-      options: { sort: { pageNumber: 1 },skip: (num_page - 1) * num_limit, limit: parseInt(str_limit) },
+      options: { sort: { pageNumber: 1 }, skip: (num_page - 1) * num_limit, limit: parseInt(str_limit) },
       populate: { path: 'words' }
     })
     .then((book) => {
@@ -83,7 +84,7 @@ const getBookPages = (req: Request, res: Response) => {
       res.json({ pages: book.pages });
     })
     .catch((error) => {
-      console.error(error);
+      logger.error(`Error fetching book with ID: ${bookId}`, error);
       res.status(500).json({ error: 'Something went wrong' });
     });
 };
@@ -114,32 +115,27 @@ interface IPage extends Document {
  *
  * @param {string} bookId - The ID of the book whose pages are to be sorted and
 **/
-const sortAndUpdatePages = (bookId: string): Promise<void> => {
+const sortAndUpdatePages = async (bookId: string): Promise<void> => {
   // Step 1: Retrieve and sort pages using aggregation
-  return Page.aggregate<IPage>([
+  try {
+    const sortedPages = await Page.aggregate<IPage>([
       { $match: { bookId: bookId } }, // Match pages for the specific book
       { $sort: { createdAt: 1 } }, // Sort by createdAt or any other field
       { $project: { _id: 1 } } // Project only the _id field
-  ])
-  .then((sortedPages) => {
-      // Step 2: Update the pageNumber field based on the sorted order
-      const bulkOps = sortedPages.map((page, index) => ({
-          updateOne: {
-              filter: { _id: page._id },
-              update: { $set: { pageNumber: index + 1 } }
-          }
-      }));
-
-      // Execute bulk update
-      return Page.bulkWrite(bulkOps);
-  })
-  .then(() => {
-      console.log('Pages sorted and updated successfully.');
-  })
-  .catch((error) => {
-      console.error('Error sorting and updating pages:', error);
-      throw error; // Rethrow the error to handle it in the calling function
-  });
+    ]);
+    // Step 2: Update the pageNumber field based on the sorted order
+    const bulkOps = sortedPages.map((page, index) => ({
+      updateOne: {
+        filter: { _id: page._id },
+        update: { $set: { pageNumber: index + 1 } }
+      }
+    }));
+    await Page.bulkWrite(bulkOps);
+    logger.info('Pages sorted and updated successfully');
+  } catch (error) {
+    logger.error('Error sorting and updating pages:', error);
+    throw error; // Rethrow the error to handle it in the calling function
+  }
 };
 
 export default { getBookWithDetails, getBookPages, sortAndUpdatePages };

@@ -1,9 +1,7 @@
-import mongoose, { Document } from 'mongoose';
 import { Request, Response } from 'express';
-import Book from '../models/bookModel';
-import Page from '../models/pageModel';
 import WordHistory from "../models/wordHistory";
-import { getAuth} from '@clerk/express'
+import { getAuth } from '@clerk/express'
+import logger from '../utils/logger';
 
 const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -37,7 +35,7 @@ const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
       console.error(error);
       res.status(500).json({ message: "Internal server error", error });
     }
-  };
+};
 
 const getWordHistory = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -59,4 +57,4 @@ const getWordHistory = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export default {addWordToHistory,getWordHistory};
+export default { addWordToHistory, getWordHistory };
