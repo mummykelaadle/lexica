@@ -4,12 +4,12 @@ import HomePage from "./pages/HomePage";
 import WordMeaningPage from "./pages/WordMeaningPage";
 import Login from './components/Login';
 import Register from './components/Register';
-import Dashboard from './components/Dashboard';
+import Dashboard from './pages/Dashboard';
 import Quiz from './pages/Quiz';
 import ProtectedRoute from "./components/ProtectedRoute";
 import WordHistory from "./pages/WordHistory";
 import { TestAddWordToHistoryPage } from "./pages/TestAddWordToHistory";
-import ProfilePage from "./components/ProfilePage";
+import ProfilePage from "./pages/ProfilePage";
 
 const App: React.FC = () => {
   return (
