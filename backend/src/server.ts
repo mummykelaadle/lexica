@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import pdfRoutes from './routes/pdfRoutes';
 import userRoutes from './routes/userRoutes';
+import bookRoutes from './routes/bookRoutes';
 
 import logger from './utils/logger';
 import connectDB from './config/db';
@@ -27,6 +28,7 @@ app.use(clerkMiddleware())
 // Use routes
 app.use('/api/v1/pdf',requireAuth(), pdfRoutes);
 app.use('/api/v1/user',requireAuth(), userRoutes);
+app.use('/api/v1/book',requireAuth(), bookRoutes);
 
 // MongoDB connection
 connectDB();
