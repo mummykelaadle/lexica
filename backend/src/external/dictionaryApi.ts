@@ -8,6 +8,14 @@ const API_BASE_URL = 'https://www.dictionaryapi.com/api/v3/references/thesaurus/
 const API_KEY = process.env.MERRIAM_WEBSTER_API_KEY;
 const DATAMUSE_API_URL = 'https://api.datamuse.com/words';
 
+interface IWordData {
+  word: string;
+  meanings: string[];
+  synonyms: string[];
+  antonyms: string[];
+  exampleSentences: string[];
+  difficulty: number;
+}
 /**
  * Fetches and parses data for a given word from Merriam-Webster API.
  * @param word The word to look up
@@ -33,7 +41,7 @@ const fetchWordDataUsingDictAPI = async (word: string) => {
       meanings: entry.shortdef || [],
       synonyms: entry.meta.syns?.[0] || [],
       antonyms: entry.meta.ants?.[0] || [],
-      exampleSentence: entry.def?.[0]?.sseq?.[0]?.[0]?.[1]?.dt?.[1]?.[1]?.[0]?.t || '',
+      exampleSentences: entry.def?.[0]?.sseq?.[0]?.[0]?.[1]?.dt?.[1]?.[1]?.[0]?.t || '',
     };
 
     // logger.info(`Parsed word data: ${JSON.stringify(wordData, null, 2)}`);
@@ -55,7 +63,6 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
     logger.info(`Fetching data for word: ${word}`);
 
     // Fetch meanings
-    const meaningsResponse = await axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d`);
     const meaningsResponse = await axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`);
     const meanings = meaningsResponse.data?.[0]?.defs?.map((def: string) => def.split('\t')[1]) || [];
 
@@ -69,14 +76,15 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
 
     // Fetch example sentences (fallback logic since Datamuse doesn't provide directly)
     const exampleResponse = await axios.get(`${DATAMUSE_API_URL}?rel_trg=${encodeURIComponent(word)}&max=1`);
-    const exampleSentence = exampleResponse.data[0]?.word ? `Example use: ${exampleResponse.data[0].word}` : '';
+    const exampleSentences = exampleResponse.data[0]?.word ? `Example use: ${exampleResponse.data[0].word}` : '';
 
-    const wordData = {
+    const wordData: IWordData = {
       word,
       meanings,
       synonyms,
       antonyms,
-      exampleSentence
+      difficulty: 0,
+      exampleSentences: [exampleSentences]
     };
 
     // logger.info(`Word data fetched: ${JSON.stringify(wordData)}`);
