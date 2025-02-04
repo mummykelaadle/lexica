@@ -66,7 +66,7 @@ async function extractWordsFromPdf(filePath: string): Promise<WordPageObject> {
         }
 
         // Create the Word document in DB
-        const { meanings, synonyms, antonyms, exampleSentence } = wordData;
+        const { meanings, synonyms, antonyms, exampleSentences } = wordData;
         const difficulty = Math.random(); // Replace with proper difficulty calculation if needed
         // TO-DO:create difficulty function/use API
 
@@ -75,7 +75,7 @@ async function extractWordsFromPdf(filePath: string): Promise<WordPageObject> {
           meanings,
           synonyms,
           antonyms,
-          exampleSentence,
+          exampleSentences,
           difficulty,
         });
 
