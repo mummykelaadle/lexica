@@ -3,6 +3,8 @@ import { Button, Navbar, NavbarBrand } from "@heroui/react";
 import { Upload } from "lucide-react";
 import ProfileButton from "./ProfileButton";
 import { useClerk } from "@clerk/clerk-react";
+import { ModeToggle } from "../components/mode-toggle"; // Import ModeToggle
+
 
 function Header() {
   const { signOut } = useClerk();
@@ -16,6 +18,7 @@ function Header() {
           <Upload className="mr-2" /> Lexica
         </span>
       </NavbarBrand>
+      <ModeToggle /> {/* Theme Toggle Button */}
       {/* <UserButton afterSignOutUrl="/"/> */}
      <ProfileButton />
      

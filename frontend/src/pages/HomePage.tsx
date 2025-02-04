@@ -6,7 +6,7 @@ import { Upload } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";  // Import Clerk components
 import { useNavigate } from "react-router-dom";  // Import useNavigate hook
 import { useEffect } from "react";
-
+import { ModeToggle } from "../components/mode-toggle"; // Import ModeToggle
 export default function Lexica() {
   const { isLoaded, user,isSignedIn } = useUser();  // Access user state from Clerk
   const { signOut } = useClerk();  // Get signOut function
@@ -31,6 +31,7 @@ export default function Lexica() {
           <NavbarItem>
             {isLoaded && !user ? (
               <>
+                <ModeToggle /> {/* Theme Toggle Button */}
                 {/* SignIn Button */}
                 <Button variant="outline" onClick={() => navigate('/login')}>
                   Sign In
