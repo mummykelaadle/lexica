@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import WordHistory from "./pages/WordHistory";
 import { TestAddWordToHistoryPage } from "./pages/TestAddWordToHistory";
 import ProfilePage from "./pages/ProfilePage";
+import WordFeedPage from "./pages/WordFeedPage";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
           <Route path="/history" element={<WordHistory />} /> {/* Home Page */}
           <Route path="/test" element={<TestAddWordToHistoryPage />} /> {/* Home Page */}
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/feed" element={<WordFeedPage />} />
         </Route> 
       </Routes>
   );
