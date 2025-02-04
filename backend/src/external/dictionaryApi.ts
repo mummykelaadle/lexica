@@ -56,6 +56,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
 
     // Fetch meanings
     const meaningsResponse = await axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d`);
+    const meaningsResponse = await axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`);
     const meanings = meaningsResponse.data?.[0]?.defs?.map((def: string) => def.split('\t')[1]) || [];
 
     // Fetch synonyms
