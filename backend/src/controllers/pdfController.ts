@@ -4,71 +4,65 @@ import Word from '../models/wordModel';
 import Page from '../models/pageModel';
 import Book from '../models/bookModel';
 import logger from '../utils/logger';
+import { fetchWordDetailsUsingDatamuse } from '../external/dictionaryApi';
 
 const processPdf = async (req: Request, res: Response) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const file = files['file'] ? files['file'][0] : null;
   logger.info(`Processing PDF`);
 
-  // Use pdfParser to extract words
   if (!file) {
     logger.error('No file uploaded');
     res.status(400).json({ error: 'No file uploaded' });
-    return undefined;
+    return;
   }
-  // return wordPages object, which has keys:page numbers and value:set of words on that page
-  const pageWords = await pdfParser.extractWordsFromPdf(file.path);
 
   try {
-    // Save word data into MongoDB page by page
-    logger.info('Saving words to MongoDB page by page');
-    const pageWordsEntries = Object.entries(pageWords);
-    // for each page number and words set pair
-    for (const [pageNumber, words] of pageWordsEntries) {
-      const wordPromises = words.map(async (word: string) => {// for each word in word set
-        const existingWord = await Word.findOne({ word: word });// check if its already saved in DB
-        if (!existingWord) {
-          // if not already saved in DB, save the word to the DB
-          const newWord = new Word({ word: word, meaning: 'Meaning', difficulty: 0 });
-          await newWord.save();
-        }
-      });
+    const pageWords = await pdfParser.extractWordsFromPdf(file.path);
 
-      await Promise.all(wordPromises);// wait for all word promises to resolve
-      logger.info(`Words for page ${pageNumber} saved to MongoDB with ${words.length} words`);
-    }
+    // Collect all unique words
+    const allWords = new Set<string>();
+    Object.values(pageWords).forEach(words => words.forEach((word: string) => allWords.add(word)));
 
-    // Create pages and associate words with them
-    logger.info('Creating pages and associating words');
-    const pagePromises = Object.entries(pageWords).map(async ([pageNumber, words]) => {// for each page
-      const wordIds = await Promise.all(words.map(async (word: string) => {// for each word on a page
-        const existingWord = await Word.findOne({ word: word });// check if word is in the DB
-        return existingWord ? existingWord._id : null;// if found return its id else null
-      }));
-      logger.info(`Page ${pageNumber} has ${wordIds.length} words`)
+    // Fetch existing words from the database
+    const existingWords = await Word.find({ word: { $in: Array.from(allWords) } });
+    const existingWordSet = new Set(existingWords.map(word => word.word));
 
-      // Promise.all ensures that we wait for wordId of all words on a page to be fetched before saving the page
-      // saving the page
+    // Fetch data for new words from the external API
+    const newWords = Array.from(allWords).filter(word => !existingWordSet.has(word));
+    const newWordDataPromises = newWords.map(word => fetchWordDetailsUsingDatamuse(word));
+    const newWordData = await Promise.all(newWordDataPromises);
+
+    // Save new words to the database
+    const newWordDocs = newWordData.map(wordData => new Word({
+      word: wordData?.word,
+      meaning: wordData?.meanings,
+      synonyms: wordData?.synonyms,
+      antonyms: wordData?.antonyms,
+      exampleSentences: wordData?.exampleSentences,
+      difficulty: wordData?.difficulty
+    }));
+    await Word.insertMany(newWordDocs);
+
+    // Create pages and associate words
+    const pagePromises = Object.entries(pageWords).map(async ([pageNumber, words]) => {
+      const wordIds = await Word.find({ word: { $in: words } }).select('_id');
       const page = new Page({
         pageNumber: parseInt(pageNumber),
-        words: wordIds.filter(id => id !== null)// only save words for whom the id was found
+        words: wordIds.map(word => word._id)
       });
-      logger.info(`Saving page ${pageNumber} to MongoDB`);
       await page.save();
-      logger.info(`Page ${pageNumber} saved to MongoDB`);
       return page._id;
     });
 
-    const pageIds = await Promise.all(pagePromises);// waiting for all pages to be saved
+    const pageIds = await Promise.all(pagePromises);
 
     // Create the book object and associate pages
     const book = new Book({
-      // title: req.body.title, // TODO add title to request
-      title: 'Book Title',
+      title: req.body.title || 'Book Title',
       pages: pageIds
     });
 
-    logger.info('Saving book to MongoDB');
     await book.save();
     logger.info('Book saved to MongoDB');
 
