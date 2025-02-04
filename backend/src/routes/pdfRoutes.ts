@@ -4,14 +4,19 @@ import pdfController from '../controllers/pdfController';
 import path from 'path';
 
 
-const upload = multer({ dest: path.join(__dirname, '../../uploads/') });
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, path.join(__dirname, '../../uploads/'));
+  },
+  filename: function(req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 const router = express.Router();
-router.post('/upload', upload.single('file'), pdfController.processPdf);
-
-// Route to upload and process PDF
-// router.post('/upload', pdfController.processPdf);
+router.post('/upload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'cover', maxCount: 1 }]), pdfController.processPdf);
 
 export default router;
-
 

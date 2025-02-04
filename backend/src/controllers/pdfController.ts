@@ -6,7 +6,8 @@ import Book from '../models/bookModel';
 import logger from '../utils/logger';
 
 const processPdf = async (req: Request, res: Response) => {
-  const { file } = req;
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  const file = files['file'] ? files['file'][0] : null;
   logger.info(`Processing PDF`);
 
   // Use pdfParser to extract words
