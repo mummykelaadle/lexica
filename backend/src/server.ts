@@ -5,10 +5,12 @@ import cors from 'cors';
 import pdfRoutes from './routes/pdfRoutes';
 import userRoutes from './routes/userRoutes';
 import bookRoutes from './routes/bookRoutes';
+import quizRoutes from './routes/quizRoutes';
 
 import logger from './utils/logger';
 import connectDB from './config/db';
 import { clerkMiddleware,requireAuth  } from '@clerk/express'
+
 
 // Load environment variables
 dotenv.config();
@@ -29,7 +31,7 @@ app.use(clerkMiddleware())
 app.use('/api/v1/pdf',requireAuth(), pdfRoutes);
 app.use('/api/v1/user',requireAuth(), userRoutes);
 app.use('/api/v1/book',requireAuth(), bookRoutes);
-
+app.use('/api/v1/quiz-questions',requireAuth(), quizRoutes);
 // MongoDB connection
 connectDB();
 
