@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import NotFoundAnimation from "../animations/NotFoundAnimation"
 import { useAuth } from "@clerk/clerk-react"; // Clerk hook to access user info
 
 interface Question {
@@ -14,6 +15,7 @@ const QuestionsPage: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<number | null>(null); // Store status code
 
   useEffect(() => {
     // Get the Clerk token and userId
@@ -26,9 +28,18 @@ const QuestionsPage: React.FC = () => {
             },
           })
             .then((response) => {
+              setStatus(response.status); // Store the status code
+
+              if (response.status === 404) {
+                throw new Error("No questions found");
+              }
+              if (response.status === 202) {
+      return []; // Return an empty array instead of null
+    }
               if (!response.ok) {
                 throw new Error("Failed to fetch questions");
               }
+             
               return response.json();
             })
             .then((data: Question[]) => setQuestions(data))
@@ -39,6 +50,7 @@ const QuestionsPage: React.FC = () => {
       })
       .catch((err) => setError("Failed to retrieve authentication token"));
   }, [getToken, userId]);
+
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
   };
@@ -53,12 +65,18 @@ const QuestionsPage: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-background transition-colors">
       <div className="p-6 max-w-lg bg-card shadow-lg rounded-lg border border-border transition-colors">
-        <h1 className="text-xl font-bold mb-4 text-foreground">Question</h1>
-
-        {error ? (
+      
+        {/* Status-based Rendering */}
+        {status === 404 ? (
+          <NotFoundAnimation />
+        ) : status === 202 ? (
+          <p>no succes</p>
+        ) : error ? (
           <p className="text-destructive">{error}</p>
         ) : (
           questions.length > 0 && (
+          <>
+           <h1 className="text-xl font-bold mb-4 text-foreground">Question</h1>
             <div className="mb-4 p-4 bg-card rounded-md">
               <p className="font-semibold text-primary">
                 {questions[currentQuestionIndex].text}
@@ -91,6 +109,8 @@ const QuestionsPage: React.FC = () => {
                 Next Question
               </button>
             </div>
+          </>
+           
           )
         )}
       </div>
