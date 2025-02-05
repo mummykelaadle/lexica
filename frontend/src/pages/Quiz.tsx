@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NotFoundAnimation from "../animations/NotFoundAnimation"
 import { useAuth } from "@clerk/clerk-react"; // Clerk hook to access user info
+import NotEnoughWordsPage from "@/animations/NotEnoughWordPage";
 
 interface Question {
   id: number;
@@ -70,12 +71,12 @@ const QuestionsPage: React.FC = () => {
         {status === 404 ? (
           <NotFoundAnimation />
         ) : status === 202 ? (
-          <p>no succes</p>
+          <NotEnoughWordsPage />
         ) : error ? (
           <p className="text-destructive">{error}</p>
-        ) : (
+        ): (
           questions.length > 0 && (
-          <>
+          <div>
            <h1 className="text-xl font-bold mb-4 text-foreground">Question</h1>
             <div className="mb-4 p-4 bg-card rounded-md">
               <p className="font-semibold text-primary">
@@ -109,7 +110,7 @@ const QuestionsPage: React.FC = () => {
                 Next Question
               </button>
             </div>
-          </>
+          </div>
            
           )
         )}
