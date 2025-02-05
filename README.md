@@ -1,5 +1,8 @@
-# File Structure
+# Lexica
 
+-------------------------------------------------
+
+## File Structure
 ```
 backend/
 ├── src/
