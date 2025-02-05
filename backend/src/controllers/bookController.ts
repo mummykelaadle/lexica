@@ -138,4 +138,27 @@ const sortAndUpdatePages = async (bookId: string): Promise<void> => {
   }
 };
 
-export default { getBookWithDetails, getBookPages, sortAndUpdatePages };
+const getBookTitle = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { bookId } = req.query;
+
+    if (!bookId || !mongoose.Types.ObjectId.isValid(String(bookId))) {
+      res.status(400).json({ error: "Invalid book ID" });
+      return;
+    }
+
+    const book = await Book.findById(bookId).select("title");
+
+    if (!book) {
+      res.status(404).json({ error: "Book not found" });
+      return;
+    }
+
+    res.json({ title: book.title });
+  } catch (error) {
+    console.error(`Error fetching book title for ID: ${req.query.bookId}`, error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+export default { getBookWithDetails, getBookPages, sortAndUpdatePages,getBookTitle };
