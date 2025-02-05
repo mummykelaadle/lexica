@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "@clerk/clerk-react"; // Clerk hook to access user info
 
 interface Question {
   id: number;
@@ -8,23 +9,36 @@ interface Question {
 }
 
 const QuestionsPage: React.FC = () => {
+  const { userId, getToken } = useAuth(); 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("src/questions.json") // Place questions.json in the public/ folder
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch questions");
+    // Get the Clerk token and userId
+    getToken()
+      .then((token) => {
+        if (userId) {
+          fetch(`http://localhost:5000/api/v1/quiz-questions?userId=${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass the token in the header
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to fetch questions");
+              }
+              return response.json();
+            })
+            .then((data: Question[]) => setQuestions(data))
+            .catch((err) => setError(err.message));
+        } else {
+          setError("User ID is required");
         }
-        return response.json();
       })
-      .then((data: Question[]) => setQuestions(data))
-      .catch((err) => setError(err.message));
-  }, []);
-
+      .catch((err) => setError("Failed to retrieve authentication token"));
+  }, [getToken, userId]);
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
   };
@@ -45,8 +59,11 @@ const QuestionsPage: React.FC = () => {
           <p className="text-destructive">{error}</p>
         ) : (
           questions.length > 0 && (
-            <div className="mb-4 p-4 bg-muted rounded-md">
-              <p className="font-semibold text-primary">{questions[currentQuestionIndex].text}</p>
+            <div className="mb-4 p-4 bg-card rounded-md">
+              <p className="font-semibold text-primary">
+                {questions[currentQuestionIndex].text}
+              </p>
+
               <ul className="list-none pl-0 mt-2">
                 {questions[currentQuestionIndex].options.map((option, index) => (
                   <li
@@ -80,5 +97,6 @@ const QuestionsPage: React.FC = () => {
     </div>
   );
 };
+
 
 export default QuestionsPage;
