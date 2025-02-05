@@ -73,7 +73,7 @@ async function generateIncorrectOptions(correctMeaning: string, word: string): P
   try {
     // Fetch 3 random words (excluding the given word) with their meanings
     const randomWords = await Word.aggregate([
-      { $match: { word: { $ne: word } } }, // Exclude the correct word
+      { $match: { word: { $ne: word }, meanings: { $exists: true, $not: { $size: 0 } } } }, // Exclude the correct word and ensure words have meanings
       { $sample: { size: 3 } }, // Get 3 random words
       { $project: { meanings: { $slice: ["$meanings", 1] } } }, // Take only the first meaning
     ]);
