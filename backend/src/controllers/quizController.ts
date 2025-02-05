@@ -13,8 +13,18 @@ const generateQuiz = async (req: Request, res: Response, next: NextFunction) => 
     const wordHistory = await WordHistory.findOne({ userId }).populate("wordEntries.wordId");
 
     if (!wordHistory || wordHistory.wordEntries.length === 0) {
-      return res.status(404).json({ error: "No word history found for this user" });
+      return res.status(404).json({
+        error: "No word history found. Please start adding words to your history."
+      });
     }
+
+       // Check if there are not enough words (less than 3) to generate the quiz
+       if (wordHistory.wordEntries.length < 3) {
+        return res.status(202).json({ //202 indicates that a request has been accepted for processing but has not yet been completed
+          message: "Not enough word history to generate a quiz. Add more words and try again."
+        });
+      }
+
 
     // Generate quiz questions from the word history
     const questions = await Promise.all(
