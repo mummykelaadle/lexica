@@ -51,9 +51,10 @@ const QuestionsPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-6 max-w-lg bg-white shadow-lg rounded-lg">
-        <h1 className="text-xl font-bold mb-4 text-dark">Question</h1>
+    <div className="flex items-center justify-center min-h-screen bg-background transition-colors">
+      <div className="p-6 max-w-lg bg-card shadow-lg rounded-lg border border-border transition-colors">
+        <h1 className="text-xl font-bold mb-4 text-foreground">Question</h1>
+
         {error ? (
           <p className="text-destructive">{error}</p>
         ) : (
@@ -62,26 +63,29 @@ const QuestionsPage: React.FC = () => {
               <p className="font-semibold text-primary">
                 {questions[currentQuestionIndex].text}
               </p>
+
               <ul className="list-none pl-0 mt-2">
                 {questions[currentQuestionIndex].options.map((option, index) => (
                   <li
                     key={index}
-                    className={`mt-1 p-2 rounded-md cursor-pointer ${
-                      selectedOption === option
-                        ? option === questions[currentQuestionIndex].correctAnswer
-                          ? "bg-green-500 text-white"
-                          : "bg-red-500 text-white"
-                        : "bg-neutral"
-                    }`}
+                    className={`mt-1 p-2 rounded-md cursor-pointer transition-colors
+                      ${
+                        selectedOption === option
+                          ? option === questions[currentQuestionIndex].correctAnswer
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
                     onClick={() => handleOptionClick(option)}
                   >
                     {option}
                   </li>
                 ))}
               </ul>
+
               <button
                 onClick={handleNextQuestion}
-                className="mt-4 p-2 bg-primary text-white rounded-md"
+                className="mt-4 p-2 bg-primary text-primary-foreground rounded-md transition-colors hover:bg-primary/90 disabled:opacity-50"
                 disabled={selectedOption === null}
               >
                 Next Question

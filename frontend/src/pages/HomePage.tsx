@@ -7,21 +7,21 @@ import { useUser, useClerk } from "@clerk/clerk-react";  // Import Clerk compone
 import { useNavigate } from "react-router-dom";  // Import useNavigate hook
 import { useEffect } from "react";
 import { ModeToggle } from "../components/mode-toggle"; // Import ModeToggle
+
 export default function Lexica() {
-  const { isLoaded, user,isSignedIn } = useUser();  // Access user state from Clerk
+  const { isLoaded, user, isSignedIn } = useUser();  // Access user state from Clerk
   const { signOut } = useClerk();  // Get signOut function
   const navigate = useNavigate();  // Get navigate function
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(isSignedIn);
-    if(isSignedIn)
-      navigate('/dashboard');
-  },[isLoaded,isSignedIn,navigate])
+    if (isSignedIn) navigate('/dashboard');
+  }, [isLoaded, isSignedIn, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
       {/* Navbar */}
-      <Navbar className="bg-white shadow-md px-6 py-4">
+      <Navbar className="bg-background shadow-md px-6 py-4 border-b border-border transition-colors duration-300">
         <NavbarBrand>
           <span className="text-lg font-bold flex items-center">
             <Upload className="mr-2" /> Lexica
@@ -68,7 +68,7 @@ export default function Lexica() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
             <h1 className="text-3xl font-bold">Enhancing Reading Fluency!</h1>
-            <p className="mt-4 text-gray-700">
+            <p className="mt-4 text-muted-foreground">
               This project enhances reading fluency by extracting text from user-uploaded PDFs and analyzing vocabulary. 
               It identifies complex words, organizes them by page, and provides definitions, example sentences, and quizzes. 
               Users can preview challenging words before reading, ensuring a seamless experience.
