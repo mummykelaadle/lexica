@@ -12,6 +12,7 @@ import { TestAddWordToHistoryPage } from "./pages/TestAddWordToHistory";
 import ProfilePage from "./pages/ProfilePage";
 import WordFeedPage from "./pages/WordFeedPage";
 import { ThemeProvider } from "@/components/theme-provider"; // Make sure the path is correct
+import NotFound from './pages/NotFound'; // Add this line
 
 const App: React.FC = () => {
   return (
@@ -30,6 +31,7 @@ const App: React.FC = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/feed" element={<WordFeedPage />} />
         </Route> 
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ThemeProvider>
   );
