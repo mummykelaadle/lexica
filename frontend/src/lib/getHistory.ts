@@ -12,7 +12,7 @@ interface WordId extends Object{
     _v:number;
     _id:string;
     difficulty:number;
-    meaning:string;
+    meanings:string[];
     word:string;
   }
   
