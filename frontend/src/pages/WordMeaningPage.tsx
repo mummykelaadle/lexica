@@ -8,6 +8,7 @@ import { Volume2, Heart } from "lucide-react";
 import { checkIfFavorite, toggleFavorite } from "../lib/api"; // Import API functions
 import { useGetWordDetails } from "@/lib/useGetWordDetails";
 import { useUser } from "@clerk/clerk-react";
+import { addWordToHistory } from "@/lib/addWordToHistory";
 
 function WordMeaningPage() {
   const { word } = useParams();
@@ -21,15 +22,20 @@ function WordMeaningPage() {
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
       const wordId=wordData._id;
-      console.log(wordData._id);
-      console.log(wordId);
-      console.log
+      
       if (!wordId || !user) return;
       const isFav = await checkIfFavorite(wordId);
       setIsFavorited(isFav);  // ✅ Update state with the result
     };
-  
+    
+    const addwordtohis=async ()=>{
+      const wordId=wordData._id;
+      addWordToHistory(wordId);
+    }
+    
+    
     fetchFavoriteStatus();
+     addwordtohis()
   }, [word,loading, user]);
   
   const handleToggleFavorite = async () => {
