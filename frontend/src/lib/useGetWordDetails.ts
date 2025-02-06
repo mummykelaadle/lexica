@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 interface WordInterface {
-  _id: number;
+  _id: string;
   word: string;
   meanings: string[];
   synonyms: string[];
@@ -12,7 +12,7 @@ interface WordInterface {
 }
 
 const defaultData: WordInterface = {
-  _id:1,
+  _id:"1",
   word:"word",
   meanings: [
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, non!",
