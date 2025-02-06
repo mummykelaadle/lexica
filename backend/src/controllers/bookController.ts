@@ -175,5 +175,35 @@ const getBookTitle = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+const getTotalPageCount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const bookId = req.query.bookId as string;
+    const { userId } = getAuth(req); // Get userId from Clerk
 
-export default { getBookWithDetails, getBookPages, sortAndUpdatePages,getBookTitle };
+    if (!bookId || !mongoose.Types.ObjectId.isValid(bookId)) {
+      res.status(400).json({ error: "Invalid book ID" });
+      return;
+    }
+
+    const book = await Book.findById(bookId).select("pages ownerId");
+
+    if (!book) {
+      res.status(404).json({ error: "Book not found" });
+      return;
+    }
+
+    if (book.ownerId != userId) {
+      logger.warn(`Unauthorized access attempt. OwnerId: ${book.ownerId}, UserId: ${userId}`);
+      res.status(403).json({ message: "Unauthorized access. You are not the owner" });
+      return;
+    }
+
+    res.json({ count: book.pages?.length || 0 });
+  } catch (error) {
+    console.error(`Error fetching total page count for book ID: ${req.query.bookId}`, error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+
+export default { getBookWithDetails, getBookPages, sortAndUpdatePages,getBookTitle,getTotalPageCount };
