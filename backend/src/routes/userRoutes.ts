@@ -20,4 +20,7 @@ router.get("/favorites", userController.getFavouriteWords);
 
 // Remove a word from the user's favorites
 router.delete("/favorites/:wordId", userController.removeWordFromFavorites);
+
+// Get all books of a user
+router.get("/books", userController.getBooksByUserId);
 export default router;

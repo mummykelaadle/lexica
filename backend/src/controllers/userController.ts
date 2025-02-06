@@ -5,6 +5,7 @@ import logger from '../utils/logger';
 
 import FavouriteWord from "../models/favouriteWord";
 import mongoose from "mongoose";
+import Book from '../models/bookModel';
 
 const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -189,5 +190,21 @@ const isWordFavorite = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const getBooksByUserId = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = getAuth(req); // Get userId from Clerk
+    logger.info(`fetching all books for userId:${userId}`)
+    const books = await Book.find({ ownerId: userId }).select("_id title");
 
-export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, removeWordFromFavorites, isWordFavorite };
+    // Map over books to return an array of book objects with id and title
+    const bookList = books.map(book => ({ bookId: book._id, title: book.title }));
+
+    res.json({ books: bookList });
+  } catch (error) {
+    logger.error(`Error fetching books for user ID: ${req.query.userId}`, error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+
+export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, removeWordFromFavorites, isWordFavorite,getBooksByUserId };
