@@ -16,4 +16,7 @@ router.get('/sortPages', bookController.sortAndUpdatePages);
 // Route returns the title of a book based on bookId as a param
 router.get('/title', bookController.getBookTitle);
 
+// Route returns the total page count
+router.get('/pageCount', bookController.getTotalPageCount);
+
 export default router;
