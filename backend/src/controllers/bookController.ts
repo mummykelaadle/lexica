@@ -3,6 +3,7 @@ import Book from '../models/bookModel';
 import Page from '../models/pageModel';
 import mongoose, { Document } from 'mongoose';
 import logger from '../utils/logger';
+import { getAuth } from '@clerk/express'
 
 /**
  * Retrieves a book by its ID along with its associated pages and words.
@@ -16,6 +17,7 @@ import logger from '../utils/logger';
  * @param {Response} res - The response object used to send the response back to the client.
  */
 const getBookWithDetails = (req: Request, res: Response) => {
+  const { userId } = getAuth(req); // Get userId from Clerk
   const { bookId } = req.body;
   logger.info(`Fetching book with ID: ${bookId}`);
 
@@ -32,7 +34,9 @@ const getBookWithDetails = (req: Request, res: Response) => {
       if (!book) {
         return res.status(404).json({ message: "Book not found" });
       }
-
+      if(book.ownerId!==userId){
+        return res.status(401).json({ message: "Unauthorized access. You are not the owner" });
+      }
       // Send the populated book as the response
       res.status(200).json(book);
     })
@@ -62,6 +66,7 @@ const getBookWithDetails = (req: Request, res: Response) => {
  * @param {Response} res - The response object used to send the response back to the client.
  */
 const getBookPages = (req: Request, res: Response) => {
+  const { userId } = getAuth(req); // Get userId from Clerk
   const { bookId, page = 1, limit = 3 } = req.query;
   const num_page = Number(page);
   const num_limit = Number(limit);
@@ -79,7 +84,9 @@ const getBookPages = (req: Request, res: Response) => {
       if (!book) {
         return res.status(404).json({ error: 'Book not found' });
       }
-
+      if(book.ownerId!==userId){
+        return res.status(401).json({ message: "Unauthorized access. You are not the owner" });
+      }
       // Send the populated pages as the response
       res.json({ pages: book.pages });
     })
@@ -141,6 +148,7 @@ const sortAndUpdatePages = async (bookId: string): Promise<void> => {
 const getBookTitle = async (req: Request, res: Response): Promise<void> => {
   try {
     const { bookId } = req.query;
+    const { userId } = getAuth(req); // Get userId from Clerk
 
     if (!bookId || !mongoose.Types.ObjectId.isValid(String(bookId))) {
       res.status(400).json({ error: "Invalid book ID" });
@@ -152,6 +160,10 @@ const getBookTitle = async (req: Request, res: Response): Promise<void> => {
     if (!book) {
       res.status(404).json({ error: "Book not found" });
       return;
+    }
+
+    if(book.ownerId!==userId){
+      res.status(401).json({ message: "Unauthorized access. You are not the owner" });
     }
 
     res.json({ title: book.title });
