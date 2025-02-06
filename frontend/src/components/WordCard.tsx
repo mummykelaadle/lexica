@@ -32,7 +32,7 @@ const WordCard = forwardRef<HTMLDivElement, WordCardProps>(
         onClick={handleClick}
         className="transition-transform hover:scale-105 w-fit p-2"
         style={{
-          fontSize: `${word.difficulty * 5 + 1}em`,
+          fontSize: `${word.difficulty*3 + 1}rem`,
           color: customWordColor,
         }}
         {...props}
