@@ -63,7 +63,11 @@ export default {
     				border: 'hsl(var(--sidebar-border))',
     				ring: 'hsl(var(--sidebar-ring))'
     			}
-    		}
+    		},transform: ["hover", "focus"],
+			rotate: {
+			  y180: "rotateY(180deg)",
+			},
+			backfaceVisibility: ["hidden"],
     	}
     },
     plugins: [require("tailwindcss-animate")],
