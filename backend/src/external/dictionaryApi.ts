@@ -1,6 +1,7 @@
 import axios from 'axios';
 import logger from '../utils/logger';
 import dotenv from 'dotenv';
+import { calculateWordDifficulty } from '../utils/word-difficulty/getWordDifficulty';
 
 dotenv.config();
 
@@ -83,7 +84,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
       meanings,
       synonyms,
       antonyms,
-      difficulty: 0,
+      difficulty: await calculateWordDifficulty(word),
       exampleSentences: [exampleSentences]
     };
 
