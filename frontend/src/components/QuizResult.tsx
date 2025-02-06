@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import ShareModal from "./ShareModal";
+import ReactConfetti from "react-confetti";
 
 interface QuizResultProps {
   score: number;
@@ -11,6 +12,9 @@ interface QuizResultProps {
 }
 
 const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry }) => {
+  // Define the confetti parameters
+  const [width, height] = [window.innerWidth, window.innerHeight];
+
   return (
     <Card className="text-center p-6">
       <CardContent>
@@ -18,6 +22,10 @@ const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry 
         <p className="mt-2 text-lg text-primary">
           Your Score: {score} / {totalQuestions}
         </p>
+        
+        {/* Confetti effect for score above 6 */}
+        {score > 6 && <ReactConfetti width={width} height={height} />}
+        
         {score > 6 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -38,6 +46,7 @@ const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry 
             Keep Trying! 😊
           </motion.div>
         )}
+
         <button
           onClick={onRetry}
           className="mt-4 p-2 bg-blue-500 text-white rounded-md transition-colors hover:bg-blue-600"
