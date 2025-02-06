@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
+import ShareModal from "./ShareModal";
 
 interface QuizResultProps {
   score: number;
@@ -43,6 +44,7 @@ const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry 
         >
           Retry Quiz
         </button>
+        <ShareModal score={score} total={10} />
       </CardContent>
     </Card>
   );
