@@ -1,5 +1,12 @@
-import { History, Home, ShieldQuestionIcon, Search, Settings, LogOut } from "lucide-react"
-
+import {
+  History,
+  Home,
+  ShieldQuestionIcon,
+  Search,
+  CircleUser,
+  LogOut,
+} from "lucide-react";
+import { BookOpen } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,13 +16,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-
+} from "@/components/ui/sidebar";
+import { UserButton } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+import { Link } from "react-router-dom";
 // Menu items.
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/dashboard",
     icon: Home,
   },
   {
@@ -25,49 +34,49 @@ const items = [
   },
   {
     title: "History",
-    url: "/word-history",
+    url: "/history",
     icon: History,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Profile",
+    url: "/profile",
+    icon: CircleUser,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-  {
-    title: "Logout",
-    url: "/logout",
-    icon: LogOut,
-  },
-]
+];
 
 export function AppSidebar() {
+  const { isSignedIn, user, isLoaded } = useUser()
+
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupLabel className="ml-5 mt-5">
+            <Link to="/dashboard" className="flex items-center text-lg font-bold">
+              <BookOpen className="mr-2" /> Lexica
+            </Link>
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="mt-10 ml-1">
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.title} className="py-3">
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
-                    </a>
+                      <span className="text-lg font-semibold">
+                        {item.title}
+                      </span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem key="logout-item" className="py-3 pl-0.5">
+                <span  className="flex"><UserButton/>{isSignedIn&&isLoaded&&<p className="pl-5 text-lg font-semibold">{user.fullName}</p>}</span>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
-
