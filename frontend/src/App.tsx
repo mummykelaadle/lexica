@@ -45,9 +45,9 @@ const App: React.FC = () => {
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/feed" element={<WordFeedPage />} />
-            <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
+            <Route path="*" element={<NotFound />} />
       </Routes>
     </ThemeProvider>
   );
