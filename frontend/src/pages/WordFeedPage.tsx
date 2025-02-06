@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useBookTitle } from "@/lib/useGetBookTitle";
 
 const WordFeedPage: React.FC = () => {
-  const bookId = "67a22a6dc50061e8ef7b9f62";
+  const bookId = "67a4906bff994236db04c322";
   const { loading, error, title } = useBookTitle(bookId);
 
   return (
