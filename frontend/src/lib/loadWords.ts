@@ -13,8 +13,8 @@ interface WordInterface{
   }
 
 function loadWords(bookId: string, count: number, limit: number) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [loadingWords, setLoading] = useState(true);
+  const [errorWords, setError] = useState(false);
   const [words, setWords] = useState<WordInterface[]>([]);
   const [hasMore, setHasMore] = useState(false);
   console.log("-------------->" + count + "     " + limit);
@@ -45,7 +45,7 @@ function loadWords(bookId: string, count: number, limit: number) {
 
     return ()=>cancel();
 },[bookId,count,limit])
-return {loading,error,words,hasMore};
+return {loadingWords,errorWords,words,hasMore};
 }
 
 export { loadWords };
