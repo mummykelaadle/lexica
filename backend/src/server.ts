@@ -6,6 +6,7 @@ import pdfRoutes from './routes/pdfRoutes';
 import userRoutes from './routes/userRoutes';
 import bookRoutes from './routes/bookRoutes';
 import quizRoutes from './routes/quizRoutes';
+import wordRoutes from './routes/wordRoutes';
 
 import logger from './utils/logger';
 import connectDB from './config/db';
@@ -32,6 +33,7 @@ app.use('/api/v1/pdf',requireAuth(), pdfRoutes);
 app.use('/api/v1/user',requireAuth(), userRoutes);
 app.use('/api/v1/book',requireAuth(), bookRoutes);
 app.use('/api/v1/quiz-questions',requireAuth(), quizRoutes);
+app.use('/api/v1/word',requireAuth(),wordRoutes)
 // MongoDB connection
 connectDB();
 
