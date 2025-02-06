@@ -1,17 +1,53 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { languages } from "../lib/language";
-import { Volume2 } from "lucide-react";
+import { Volume2, Heart } from "lucide-react";
+
+import { checkIfFavorite, toggleFavorite } from "../lib/api"; // Import API functions
 import { useGetWordDetails } from "@/lib/useGetWordDetails";
+import { useUser } from "@clerk/clerk-react";
 
 function WordMeaningPage() {
   const { word } = useParams();
+
+  const { user } = useUser();
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [targetLang, setTargetLang] = useState("hi");
   const { wordData, loading, error } = useGetWordDetails(word || "");
+  const [isFavorited, setIsFavorited] = useState(false);
 
+  useEffect(() => {
+    const fetchFavoriteStatus = async () => {
+      const wordId=wordData._id;
+      console.log(wordData._id);
+      console.log(wordId);
+      console.log
+      if (!wordId || !user) return;
+      const isFav = await checkIfFavorite(wordId);
+      setIsFavorited(isFav);  // ✅ Update state with the result
+    };
+  
+    fetchFavoriteStatus();
+  }, [word,loading, user]);
+  
+  const handleToggleFavorite = async () => {
+    
+    const wordId=wordData._id
+    console.log(wordId)
+    if (!wordId || !user) return;
+    console.log("handleToggleFavorite function called!");
+    const newFavoriteState = !isFavorited;
+    setIsFavorited(newFavoriteState);
+    try {
+      const res = await toggleFavorite(wordId, newFavoriteState);
+      console.log("Toggle favorite response:", res);
+    } catch (err) {
+      console.error("❌ Failed to update favorite:", err);
+      setIsFavorited(!newFavoriteState);
+    }
+};
   useEffect(() => {
     const getTranslation = async (word: string) => {
       try {
@@ -60,48 +96,61 @@ function WordMeaningPage() {
             >
               <Volume2 className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </button>
-          </div>
-          <Badge className="text-lg px-4 py-1 mb-6">{"noun"}</Badge>
-
-          {/* Translation Section */}
-          <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 mb-6">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-              Translate To:
-            </h2>
-
-            {/* Language Selection Dropdown */}
-            <select
-              className="border p-2 rounded w-full mb-3 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              value={targetLang}
-              onChange={(e) => setTargetLang(e.target.value)}
+            {/* ❤️ Favorite Button */}
+            <button
+              onClick={() => {
+                console.log("❤️ Heart button clicked!");
+                handleToggleFavorite();
+              }}
+              className="p-2 bg-gray-200 rounded-full"
+              aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
             >
-              {languages.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Translation Box */}
-            {translatedText && (
-              <div className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-600 shadow-sm">
-                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Translation:
-                </h3>
-                <p className="text-lg text-gray-900 dark:text-gray-200">
-                  {translatedText}
-                </p>
-              </div>
-            )}
+              <Heart className={`w-6 h-6 ${isFavorited ? "text-red-500 fill-red-500" : "text-gray-700 dark:text-gray-300"}`} />
+            </button>
           </div>
 
-          <Section title="Definitions" items={wordData.meanings} />
-          <Section title="Usages" items={wordData.exampleSentences} />
-          <RowSection title="Synonyms" items={wordData.synonyms} />
-          <RowSection title="Antonyms" items={wordData.antonyms} />
-        </>
-      )}
-    </div>
+      <Badge className="text-lg px-4 py-1 mb-6">{"noun"}</Badge>
+
+      {/* Translation Section */}
+      <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 mb-6">
+        <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
+          Translate To:
+        </h2>
+
+        {/* Language Selection Dropdown */}
+        <select
+          className="border p-2 rounded w-full mb-3 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          value={targetLang}
+          onChange={(e) => setTargetLang(e.target.value)}
+        >
+          {languages.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Translation Box */}
+        {translatedText && (
+          <div className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-600 shadow-sm">
+            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Translation:
+            </h3>
+            <p className="text-lg text-gray-900 dark:text-gray-200">
+              {translatedText}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <Section title="Definitions" items={wordData.meanings} />
+      <Section title="Usages" items={wordData.exampleSentences} />
+      <RowSection title="Synonyms" items={wordData.synonyms} />
+      <RowSection title="Antonyms" items={wordData.antonyms} />
+    </>
+  )
+}
+    </div >
   );
 }
 
