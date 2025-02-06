@@ -5,7 +5,7 @@ import WordMeaningPage from "./pages/WordMeaningPage";
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './pages/Dashboard';
-import Quiz from './pages/Quiz';
+import Quiz from './pages/QuestionsPage';
 import ProtectedRoute from "./components/ProtectedRoute";
 import WordHistory from "./pages/WordHistory";
 import { TestAddWordToHistoryPage } from "./pages/TestAddWordToHistory";
