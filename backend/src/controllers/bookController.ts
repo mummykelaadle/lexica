@@ -164,6 +164,7 @@ const getBookTitle = async (req: Request, res: Response): Promise<void> => {
 
     if(book.ownerId!==userId){
       res.status(401).json({ message: "Unauthorized access. You are not the owner" });
+      return;
     }
 
     res.json({ title: book.title });
