@@ -9,6 +9,7 @@ export const getWordWithDetails = (req: Request, res: Response)=> {
   if (!word || typeof word !== "string") {
     logger.info(`Invalid or missing word parameter`);
     res.status(400).json({ message: "Invalid or missing word parameter" });
+    return;
   }
 
   Word.findOne({ word })
@@ -16,13 +17,16 @@ export const getWordWithDetails = (req: Request, res: Response)=> {
       if (!wordData) {
         logger.info(`Word not found`);
         res.status(404).json({ message: "Word not found" });
+        return;
       }
       logger.info(`Word found.`);
       res.status(200).json(wordData);
+      return;
     })
     .catch((error) => {
       logger.error(`Error fetching word details for: ${word}`, error);
       res.status(500).json({ message: "Internal server error", error });
+      return
     });
 };
 
