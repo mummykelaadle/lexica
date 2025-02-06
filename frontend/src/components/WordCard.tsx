@@ -22,7 +22,7 @@ const WordCard = forwardRef<HTMLDivElement, WordCardProps>(
     const navigate = useNavigate();
 
     const handleClick = useCallback(() => {
-      navigate(`/meaning/${word}`);
+      navigate(`/meaning/${word.word}`);
     }, [navigate, word]);
 
     return (
