@@ -14,6 +14,7 @@ import WordFeedPage from "./pages/WordFeedPage";
 import { ThemeProvider } from "@/components/theme-provider"; // Make sure the path is correct
 import NotFound from './pages/NotFound'; // Add this line
 import Layout from "./components/Layout";
+import FavoriteWords from "./pages/FavoriteWords";
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const App: React.FC = () => {
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/meaning/:word" element={<WordMeaningPage />} />
             <Route path="/history" element={<WordHistory />} />
+            <Route path="/favorites" element={<FavoriteWords/>} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/feed" element={<WordFeedPage />} />
