@@ -5,6 +5,7 @@ import {
   Search,
   CircleUser,
   LogOut,
+  Heart
 } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import {
@@ -42,13 +43,18 @@ const items = [
     url: "/profile",
     icon: CircleUser,
   },
+  {
+    title: "Favorites",
+    url: "/favorites",
+    icon: Heart,
+  },
 ];
 
 export function AppSidebar() {
   const { isSignedIn, user, isLoaded } = useUser()
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" >
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="ml-5 mt-5">
