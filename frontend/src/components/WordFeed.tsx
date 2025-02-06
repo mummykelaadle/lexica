@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { loadWords } from "@/lib/loadWords";
 import WordCard from "./WordCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useParams } from "react-router-dom";
 
 interface WordInterface{
   _id:number;
@@ -13,14 +14,15 @@ interface WordInterface{
   difficulty:number
 }
 
-export default function WordFeed({ lastCount }: { lastCount: number }) {
-  const [count, setCount] = useState(lastCount);
+export default function WordFeed(params:{lastCount:number,bookId:string}) {
+  const {lastCount,bookId} = params;
+  const [count, setCount] = useState(Number(lastCount) || 0);
+  const [currentBookId,setCurrentBookId] = useState(bookId || "")
   //hardcoded for now, will come in as a param in future
   const limit = 1;
-  const bookId = "67a4906bff994236db04c322";
 
   const { loading, error, words, hasMore } = loadWords(
-    bookId,
+    currentBookId,
     count,
     limit
   );

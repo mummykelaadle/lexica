@@ -44,7 +44,7 @@ const App: React.FC = () => {
             <Route path="/favorites" element={<FavoriteWords/>} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/feed" element={<WordFeedPage />} />
+            <Route path="/feed/:lastCount/:bookId" element={<WordFeedPage />} />
           </Route>
         </Route>
             <Route path="*" element={<NotFound />} />
