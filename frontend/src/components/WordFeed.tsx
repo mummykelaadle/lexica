@@ -3,19 +3,21 @@ import { loadWords } from "@/lib/loadWords";
 import WordCard from "./WordCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface WordInterface {
-  _id: string;
-  word: string;
-  meaning: string;
-  difficulty: number;
-  __v: number;
+interface WordInterface{
+  _id:number;
+  word:string;
+  meanings:string[];
+  synonyms:string[];
+  antonyms:string[];
+  exampleSentences:string[];
+  difficulty:number
 }
 
 export default function WordFeed({ lastCount }: { lastCount: number }) {
   const [count, setCount] = useState(lastCount);
   //hardcoded for now, will come in as a param in future
   const limit = 1;
-  const bookId = "67a22a6dc50061e8ef7b9f62";
+  const bookId = "67a4906bff994236db04c322";
 
   const { loading, error, words, hasMore } = loadWords(
     bookId,
@@ -48,9 +50,9 @@ export default function WordFeed({ lastCount }: { lastCount: number }) {
       {!error && words.map((word, index) => {
         if (words.length == index + 1)
           return (
-            <WordCard ref={lastWordElementRef} word={word.word} difficulty={word.difficulty} _id={word._id} />
+            <WordCard ref={lastWordElementRef} word={word}/>
           );
-        else return <WordCard word={word.word} difficulty={word.difficulty} _id={word._id} />
+        else return <WordCard word={word}/>
       })}
 
       {!error && loading && (

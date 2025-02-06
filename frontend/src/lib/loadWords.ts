@@ -2,13 +2,15 @@ import axios from "axios";
 import { Canceler } from "axios";
 import { useEffect, useState } from "react";
 
-interface WordInterface {
-    _id: string;
-    word: string;
-    meaning: string;
-    difficulty: number;
-    __v: number;
-}
+interface WordInterface{
+    _id:number;
+    word:string;
+    meanings:string[];
+    synonyms:string[];
+    antonyms:string[];
+    exampleSentences:string[];
+    difficulty:number
+  }
 
 function loadWords(bookId: string, count: number, limit: number) {
   const [loading, setLoading] = useState(true);

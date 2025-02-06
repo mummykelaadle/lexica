@@ -2,15 +2,23 @@ import { getColorForDifficulty } from "@/lib/getWordColors";
 import { useNavigate } from "react-router-dom";
 import { useCallback, forwardRef } from "react";
 
+interface WordInterface{
+  _id:number;
+  word:string;
+  meanings:string[];
+  synonyms:string[];
+  antonyms:string[];
+  exampleSentences:string[];
+  difficulty:number
+}
+
 interface WordCardProps extends React.InputHTMLAttributes<HTMLDivElement> {
-  word: string;
-  difficulty: number;
-  _id: string;
+  word: WordInterface;
 }
 
 const WordCard = forwardRef<HTMLDivElement, WordCardProps>(
-  ({ word, difficulty, _id, ...props }, ref) => {
-    const customWordColor = getColorForDifficulty(difficulty);
+  ({ word, ...props }, ref) => {
+    const customWordColor = getColorForDifficulty(word.difficulty);
     const navigate = useNavigate();
 
     const handleClick = useCallback(() => {
@@ -19,17 +27,17 @@ const WordCard = forwardRef<HTMLDivElement, WordCardProps>(
 
     return (
       <div
-        key={_id}
+        key={word._id}
         ref={ref}
         onClick={handleClick}
         className="transition-transform hover:scale-105 w-fit p-2"
         style={{
-          fontSize: `${difficulty * 5 + 1}em`,
+          fontSize: `${word.difficulty * 5 + 1}em`,
           color: customWordColor,
         }}
         {...props}
       >
-        {word}
+        {word.word}
       </div>
     );
   }
