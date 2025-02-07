@@ -2,6 +2,7 @@ import { syllable } from "syllable";
 import { aoaData } from "./readAoAData";
 import { concretenessData } from "./readConcretenessData";
 import { getDifficultInstance } from "./difficult";
+import { Difficulty } from "difficulty";
 
 async function calculateDifficulty(word: string): Promise<number> {
   const difficult = await getDifficultInstance();
@@ -25,10 +26,9 @@ function getWordAOA(word: string) {
   return AoAScore;
 }
 
-async function calculateWordDifficulty(word: string) {
+async function calculateWordDifficulty(word: string,difficulty:Difficulty) {
   const syllableCount = countSyllables(word);
-  // const diffLevel = await calculateDifficulty(word);
-  const diffLevel = 1;
+  const diffLevel = difficulty.getLevel(word);
   const AoAScore = getWordAOA(word);
   const semanticComplexity = getSemanticComplexity(word);
 
@@ -46,10 +46,10 @@ async function calculateWordDifficulty(word: string) {
 
   // Weighted sum (weights can be tuned)
   const difficultyScore =
-    0.3 * normalizedAoA +
-    0.25 * normalizedSyllables +
-    0.2 * normalizedDiffLevel +
-    0.25 * normalizedSemantics;
+    0.1 * normalizedAoA +
+    0.15 * normalizedSyllables +
+    0.6 * normalizedDiffLevel +
+    0.15 * normalizedSemantics;
 
   const finalScore = Math.min(difficultyScore, 1);
   const scoreString: string = finalScore.toFixed(2);

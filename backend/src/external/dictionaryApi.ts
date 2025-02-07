@@ -2,6 +2,7 @@ import axios from 'axios';
 import logger from '../utils/logger';
 import dotenv from 'dotenv';
 import { calculateWordDifficulty } from '../utils/word-difficulty/getWordDifficulty';
+import { Difficulty } from 'difficulty';
 
 dotenv.config();
 
@@ -59,18 +60,18 @@ const fetchWordDataUsingDictAPI = async (word: string) => {
  * @param word The word to look up
  * @returns Object containing word details or null if not found
  */
-const fetchWordDetailsUsingDatamuse = async (word: string) => {
+const fetchWordDetailsUsingDatamuse = async (word: string,difficulty:Difficulty) => {
   try {
     logger.info(`Fetching data for word: ${word}`);
 
     // Initiate parallel requests
-    const [meaningsResponse, synonymsResponse, antonymsResponse, exampleResponse, difficulty] = await Promise.all([
+    const [meaningsResponse, synonymsResponse, antonymsResponse, exampleResponse, difficulty_score] = await Promise.all([
       axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`),
       axios.get(`${DATAMUSE_API_URL}?rel_syn=${encodeURIComponent(word)}&max=5`),
       axios.get(`${DATAMUSE_API_URL}?rel_ant=${encodeURIComponent(word)}&max=5`),
       axios.get(`${DATAMUSE_API_URL}?rel_trg=${encodeURIComponent(word)}&max=1`),
-      Promise.resolve(0.7),
-      // calculateWordDifficulty(word)
+      // Promise.resolve(0.7),
+      calculateWordDifficulty(word,difficulty)
     ]);
     logger.info(`Fetched data for word: ${word}`);
 
@@ -85,7 +86,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
       meanings,
       synonyms,
       antonyms,
-      difficulty,
+      difficulty:difficulty_score,
       exampleSentences: [exampleSentences]
     };
 
