@@ -28,13 +28,13 @@ Lexica is built using modern web technologies:
 
 1️⃣ Clone the repository:
 ```bash
- git clone https://github.com/your-repo-name.git
+ git clone https://github.com/mummykelaadle/lexica.git
 ```
 
 2️⃣ Install dependencies:
 ```bash
  cd lexica
- pnpm install
+ pnpm install-all
 ```
 
 3️⃣ Start the development server:
