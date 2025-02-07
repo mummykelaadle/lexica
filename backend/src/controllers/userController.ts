@@ -232,9 +232,6 @@ const saveUserScore = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-
-export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, removeWordFromFavorites, isWordFavorite,getBooksByUserId, saveUserScore }
-
 // Define Levels
 const levels = [
   { name: "NewBie",  threshold: 0 },  // Just started, confused reader  
@@ -297,5 +294,5 @@ const getUserLevel = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords,getUserLevel, removeWordFromFavorites, isWordFavorite,getBooksByUserId };
+export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords,getUserLevel, removeWordFromFavorites, isWordFavorite,getBooksByUserId, saveUserScore };
 
