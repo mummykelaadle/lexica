@@ -1,12 +1,10 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
   Route,
   Routes,
   Outlet,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import WordMeaningPage from "./pages/WordMeaningPage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./pages/Dashboard";
@@ -20,6 +18,11 @@ import { ThemeProvider } from "@/components/theme-provider"; // Make sure the pa
 import NotFound from "./pages/NotFound"; // Add this line
 import Layout from "./components/Layout";
 import FavoriteWords from "./pages/FavoriteWords";
+
+import LevelBar from "./pages/LevelBar";
+
+import OnboardingTest from "./pages/OnBoardingTest";
+
 
 const App: React.FC = () => {
   return (
@@ -37,13 +40,14 @@ const App: React.FC = () => {
               </Layout>
             }
           >
+            <Route path="/onboarding-test" element={<OnboardingTest />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quiz" element={<Quiz />} />
-            <Route path="/meaning/:word" element={<WordMeaningPage />} />
             <Route path="/history" element={<WordHistory />} />
             <Route path="/favorites" element={<FavoriteWords/>} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/level" element={<LevelBar />} />
             <Route path="/feed/:lastCount/:bookId" element={<WordFeedPage />} />
           </Route>
         </Route>

@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 import FavouriteWord from "../models/favouriteWord";
 import mongoose from "mongoose";
 import Book from '../models/bookModel';
+import OnboardingTest from '../models/onBoardingTest';
 
 const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -206,5 +207,92 @@ const getBooksByUserId = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const saveUserScore = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { score } = req.body;
+    const { userId } = getAuth(req); // Get userId from Clerk
 
-export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, removeWordFromFavorites, isWordFavorite, getBooksByUserId };
+    if (!userId || typeof score !== 'number') {
+      res.status(400).json({ error: 'userId and a valid numeric score are required' });
+      return;
+    }
+
+    const newScore = new OnboardingTest({
+      userId,
+      score,
+      dateTaken: new Date(),
+    });
+
+    await newScore.save();
+    res.status(201).json({ message: 'Score saved successfully!', score: newScore });
+
+  } catch (error: any) {
+    console.error('Error saving score:', error.message);
+    res.status(500).json({ error: 'Failed to save score.' });
+  }
+};
+
+// Define Levels
+const levels = [
+  { name: "NewBie",  threshold: 0 },  // Just started, confused reader  
+  { name: "Novice",  threshold: 5 },  // Reads but doesn’t fully process  
+  { name: "Chad",  threshold: 10 },  // Spreads gyaan, sometimes unwanted  
+  { name: "Guruji",  threshold: 15 },  // Roasting people with literature facts  
+  { name: "Jethalal",  threshold: 20 },  // Rhymes like a pro  
+  { name: "Shakespeare",  threshold: 25 },  // Unexpected intellectual  
+  { name: "Shashi Tharoor",  threshold: 30 }  // Uses words no one understands  
+];
+
+// Function to determine level
+const getCurrentAndNextLevel = (wordCount: number) => {
+  let currentLevel = levels[0];
+  let nextLevel = levels[1];
+
+  for (let i = 0; i < levels.length; i++) {
+    if (wordCount >= levels[i].threshold) {
+      currentLevel = levels[i];
+      nextLevel = levels[i + 1] || levels[i]; // Stay at highest level
+    } else {
+      break;
+    }
+  }
+
+  const progress =
+    nextLevel.threshold > currentLevel.threshold
+      ? ((wordCount - currentLevel.threshold) /
+          (nextLevel.threshold - currentLevel.threshold)) *
+        100
+      : 100;
+
+  return { currentLevel, nextLevel, progress };
+};
+
+// API to get user level
+const getUserLevel = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = getAuth(req);
+
+    const wordHistory = await WordHistory.findOne({ userId }).lean();
+
+    if (!wordHistory) {
+      res.status(404).json({ message: "No word history found for this user." });
+      return;
+    }
+
+    const wordCount = wordHistory.wordEntries.length;
+    const { currentLevel, nextLevel, progress } = getCurrentAndNextLevel(wordCount);
+
+    res.status(200).json({
+      wordCount,
+      currentLevel,
+      nextLevel,
+      progress: Math.min(progress, 100),
+    });
+  } catch (error) {
+    console.error("Error fetching user level:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords,getUserLevel, removeWordFromFavorites, isWordFavorite,getBooksByUserId, saveUserScore };
+

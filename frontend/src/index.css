@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Papyrus&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -94,6 +96,36 @@
   }
 }
 
+/* Scale up animation for high scores */
+@keyframes scaleUp {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-up {
+  animation: scaleUp 0.5s ease-out forwards;
+}
+
+/* Shake animation for low scores */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out forwards;
+}
+
+
 .perspective-1000 {
   perspective: 1000px;
 }
@@ -108,4 +140,40 @@
 
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+
+.egyptian-text {
+  font-family: 'Papyrus', fantasy;
+  letter-spacing: 2px;
+}
+
+.egyptian-bg {
+  background-image: url('./assets/img1.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.shadow-gold {
+  box-shadow: 0 0 15px rgba(244, 197, 66, 0.8);
+}
+
+.egyptian-border {
+  border: 2px solid #f4c542;
+}
+
+.egyptian-input {
+  background-color: #2b1e11;
+  color: #f4c542;
+  border: 2px solid #f4c542;
+}
+
+.egyptian-input::placeholder {
+  color: #f4c542;
+}
+
+.egyptian-input:focus {
+  outline: none;
+  border-color: #d4a431;
+  box-shadow: 0 0 10px rgba(244, 197, 66, 0.7);
 }
