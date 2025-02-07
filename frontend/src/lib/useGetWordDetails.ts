@@ -29,12 +29,15 @@ const defaultData: WordInterface = {
   difficulty:0,
 };
 
-export const useGetWordDetails = (word: string) => {
+export const useGetWordDetails = (word: string,isDialogOpen:boolean) => {
     const [wordData,setWordData]=useState<WordInterface>(defaultData);
     const [loading,setLoading]=useState<Boolean>(false);
     const [error,setError]=useState<Boolean>(false);
 
     useEffect(()=>{
+      if(!isDialogOpen)
+        return;
+      
       async function caller()
       {
         try {
@@ -55,7 +58,7 @@ export const useGetWordDetails = (word: string) => {
         }
       }
       caller();
-    },[word]);
+    },[word,isDialogOpen]);
 
   return {wordData,loading,error};
 };
