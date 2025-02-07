@@ -1,10 +1,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog"
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
@@ -168,10 +164,10 @@ export function WordMeaningDialog({ isDialogOpen, setIsDialogOpen, word }: WordM
                   )}
                 </div>
           
-                <Section title="Definitions" items={wordData.meanings} />
-                <Section title="Usages" items={wordData.exampleSentences} />
-                <RowSection title="Synonyms" items={wordData.synonyms} />
-                <RowSection title="Antonyms" items={wordData.antonyms} />
+                {wordData.meanings.length>0 && <Section title="Definitions" items={wordData.meanings} />}
+                {wordData.exampleSentences.length>0 &&<Section title="Usages" items={wordData.exampleSentences} />}
+                {wordData.synonyms.length>0&&<RowSection title="Synonyms" items={wordData.synonyms} />}
+                {wordData.antonyms.length>0&&<RowSection title="Antonyms" items={wordData.antonyms} />}
               </>
             )
           }
