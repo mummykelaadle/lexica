@@ -1,12 +1,10 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
   Route,
   Routes,
   Outlet,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import WordMeaningPage from "./pages/WordMeaningPage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./pages/Dashboard";
@@ -39,7 +37,6 @@ const App: React.FC = () => {
           >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quiz" element={<Quiz />} />
-            <Route path="/meaning/:word" element={<WordMeaningPage />} />
             <Route path="/history" element={<WordHistory />} />
             <Route path="/favorites" element={<FavoriteWords/>} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
