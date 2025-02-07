@@ -101,10 +101,10 @@ async function saveBookInDB(path: string, userId: string, title: string, locals:
 
   const wordsInPages = getWordsInPages(textContents);
 
-  const proccessedPages: Promise<{ pageNo: number, wordIds: string[] }>[] = [];
+  // const proccessedPages: Promise<{ pageNo: number, wordIds: string[] }>[] = [];
 
-  wordsInPages.map((words: string[], index: number) => {
-    proccessedPages.push(processPage(index, words, difficulty));
+  const proccessedPages = wordsInPages.map((words: string[], index: number) => {
+    return processPage(index, words, difficulty);
   });
 
   await Promise.all(proccessedPages);
@@ -112,13 +112,17 @@ async function saveBookInDB(path: string, userId: string, title: string, locals:
   // TODO : put pages with their word id in DB
   // and return book
 
-  const pagePromisesDB = Object.entries(processPage).map(
-    async ([pageNo, words]) => {
+  const pagePromisesDB = proccessedPages.map(
+    async (processedPagePromise) => {
+      const { pageNo, wordIds } = await processedPagePromise;
       const page = new Page({
-        pageNumber: parseInt(pageNo),
-        words: words.map((word: string) => new Mongoose.Types.ObjectId(word)),
+        pageNumber: pageNo,
+        words: wordIds.filter((id) => id).map((wordId) => new Mongoose.Types.ObjectId(wordId)),
       });
+      logger.info(`Saving page ${pageNo} to MongoDB`);
       await page.save();
+      logger.info(`Page ${pageNo} saved to MongoDB`);
+      logger.info(page._id);
       return page._id;
     }
   );
