@@ -1,5 +1,6 @@
 import { useGetUserBooks } from "@/lib/useGetUserBooks";
 import { Link } from "react-router-dom";
+import { BooksLoading } from "@/animations/BooksLoading";
 
 interface Book {
   bookId: string;
@@ -49,7 +50,7 @@ const BookList = () => {
                 </div>
               </Link>
             ))}
-            {!error && loading&&<p>loading books...</p>}
+            {!error && loading&&<BooksLoading/>}
             {error&&<p>error loading books...</p>}
           </div>
         </div>
