@@ -1,22 +1,20 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import IBook from "@/interfaces/IBook";
 
-interface Book {
-  bookId: string;
-  title: string;
-}
+const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
 
 function useGetUserBooks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<IBook[]>([]);
 
   useEffect(() => {
     setLoading(true);
     setError(false);
 
     axios
-      .get("http://localhost:5000/api/v1/user/books", { withCredentials: true })
+      .get(`${baseUrl}/api/v1/user/books`, { withCredentials: true })
       .then((res) => {
         setBooks(res.data.books || []);
         setLoading(false);
