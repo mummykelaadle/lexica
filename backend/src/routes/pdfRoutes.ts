@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import pdfController from '../controllers/pdfController';
+import uploadCover from '../middlewares/uploadCover';
 import path from 'path';
 
 
@@ -13,10 +14,11 @@ const storage = multer.diskStorage({
   }
 });
 
+
 const upload = multer({ storage: storage });
 
 const router = express.Router();
-router.post('/upload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'cover', maxCount: 1 }]), pdfController.processPdf);
+router.post('/upload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'cover', maxCount: 1 }]), uploadCover, pdfController.processPdf);
 
 export default router;
 
