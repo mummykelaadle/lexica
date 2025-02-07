@@ -206,7 +206,6 @@ const getBooksByUserId = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-
 // Define Levels
 const levels = [
   { name: "NewBie",  threshold: 0 },  // Just started, confused reader  
