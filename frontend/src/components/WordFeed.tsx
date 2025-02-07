@@ -58,8 +58,8 @@ export default function WordFeed(params: {
   return (
     <>
       {!loading && !error && <p className="leading-7 [&:not(:first-child)]:mt-6 text-gray-300 text-center">{title}</p>}
-      <p className="leading-7 [&:not(:first-child)]:mt-6 text-center text-gray-400"><span className="italic">Pages</span>:{totalPageCount&&Math.min(count*limit,totalPageCount)}/{!loadingTotalPageCount && !errorTotalPageCount && totalPageCount}</p>
-      <div className="h-[475px] overflow-y-auto flex flex-wrap justify-center items-center w-[90%] mx-auto text-center gap-[10px] relative p-4">
+      <p className="leading-7 [&:not(:first-child)]:mt-6 text-center text-gray-400"><span className="italic">Pages</span>:{totalPageCount && Math.min(count * limit, totalPageCount)}/{!loadingTotalPageCount && !errorTotalPageCount && totalPageCount}</p>
+      <div className="h-[85vh] overflow-y-auto flex flex-wrap justify-center items-center w-[90%] mx-auto text-center gap-[10px] relative p-4">
         {errorWords && <div>error occured while fetching data</div>}
         {!errorWords &&
           words.map((word, index) => {

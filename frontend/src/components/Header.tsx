@@ -8,14 +8,14 @@ import { useState } from "react";
 
 function Header() {
   const { signOut } = useClerk();
-  const [titleVisible,setTitleVisible]=useState(false);
+  const [titleVisible, setTitleVisible] = useState(false);
   return (
     <div className="flex flex-col bg-background transition-colors duration-300">
       {/* Navbar */}
       <Navbar
         className="border-b border-border bg-background px-6 py-2 text-foreground shadow-md transition-colors duration-300"
       >
-        <SidebarTrigger onClick={()=>setTitleVisible((prev)=>!prev)}/>
+        <SidebarTrigger onClick={() => setTitleVisible((prev) => !prev)} />
         <NavbarBrand>
           {titleVisible && <span className="flex items-center text-lg font-bold">
             <BookOpen className="mr-2" /> Lexica
