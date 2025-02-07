@@ -63,20 +63,21 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
   try {
     logger.info(`Fetching data for word: ${word}`);
 
-    // Fetch meanings
-    const meaningsResponse = await axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`);
+    // Initiate parallel requests
+    const [meaningsResponse, synonymsResponse, antonymsResponse, exampleResponse, difficulty] = await Promise.all([
+      axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`),
+      axios.get(`${DATAMUSE_API_URL}?rel_syn=${encodeURIComponent(word)}&max=5`),
+      axios.get(`${DATAMUSE_API_URL}?rel_ant=${encodeURIComponent(word)}&max=5`),
+      axios.get(`${DATAMUSE_API_URL}?rel_trg=${encodeURIComponent(word)}&max=1`),
+      Promise.resolve(0.7),
+      // calculateWordDifficulty(word)
+    ]);
+    logger.info(`Fetched data for word: ${word}`);
+
+    // Process results
     const meanings = meaningsResponse.data?.[0]?.defs?.map((def: string) => def.split('\t')[1]) || [];
-
-    // Fetch synonyms
-    const synonymsResponse = await axios.get(`${DATAMUSE_API_URL}?rel_syn=${encodeURIComponent(word)}&max=5`);
     const synonyms = synonymsResponse.data.map((entry: { word: string }) => entry.word);
-
-    // Fetch antonyms
-    const antonymsResponse = await axios.get(`${DATAMUSE_API_URL}?rel_ant=${encodeURIComponent(word)}&max=5`);
     const antonyms = antonymsResponse.data.map((entry: { word: string }) => entry.word);
-
-    // Fetch example sentences (fallback logic since Datamuse doesn't provide directly)
-    const exampleResponse = await axios.get(`${DATAMUSE_API_URL}?rel_trg=${encodeURIComponent(word)}&max=1`);
     const exampleSentences = exampleResponse.data[0]?.word ? `Example use: ${exampleResponse.data[0].word}` : '';
 
     const wordData: IWordData = {
@@ -84,7 +85,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
       meanings,
       synonyms,
       antonyms,
-      difficulty: await calculateWordDifficulty(word),
+      difficulty,
       exampleSentences: [exampleSentences]
     };
 
@@ -95,6 +96,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
     return null;
   }
 };
+
 
 export { fetchWordDataUsingDictAPI, fetchWordDetailsUsingDatamuse };
 
