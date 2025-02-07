@@ -1,6 +1,7 @@
 import { getColorForDifficulty } from "@/lib/getWordColors";
 import { useNavigate } from "react-router-dom";
-import { useCallback, forwardRef } from "react";
+import { useCallback, forwardRef, useState } from "react";
+import { WordMeaningDialog } from "./WordMeaningDialog";
 
 interface WordInterface{
   _id:number;
@@ -18,14 +19,16 @@ interface WordCardProps extends React.InputHTMLAttributes<HTMLDivElement> {
 
 const WordCard = forwardRef<HTMLDivElement, WordCardProps>(
   ({ word, ...props }, ref) => {
+    const [isDialogOpen,setIsDialogOpen]=useState(false);
     const customWordColor = getColorForDifficulty(word.difficulty);
     const navigate = useNavigate();
 
     const handleClick = useCallback(() => {
-      navigate(`/meaning/${word.word}`);
+      setIsDialogOpen(true);
     }, [navigate, word]);
 
     return (
+      <>
       <div
         key={word._id}
         ref={ref}
@@ -39,6 +42,8 @@ const WordCard = forwardRef<HTMLDivElement, WordCardProps>(
       >
         {word.word}
       </div>
+      <WordMeaningDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} word={word.word}/>
+      </>
     );
   }
 );
