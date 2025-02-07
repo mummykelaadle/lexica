@@ -4,6 +4,7 @@ import {
   Routes,
   Outlet,
 } from "react-router-dom";
+import { Toaster } from "react-hot-toast"; // Add this line
 import HomePage from "./pages/HomePage";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -27,6 +28,7 @@ import SpaceQuestionsPage from "./pages/SpaceQuestionsPage";
 const App: React.FC = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<HomePage />} /> {/* Home Page */}
         <Route path="/login" element={<Login />} />
@@ -53,6 +55,7 @@ const App: React.FC = () => {
         </Route>
             <Route path="*" element={<NotFound />} />
       </Routes>
+
     </ThemeProvider>
   );
 };

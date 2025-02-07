@@ -4,6 +4,7 @@ import QuizQuestion from "./QuizQuestion";
 import QuizResult from "./QuizResult";
 import NotFoundAnimation from "../animations/NotFoundAnimation";
 import NotEnoughWordsPage from "@/animations/NotEnoughWordPage";
+import toast from "react-hot-toast";
 
 interface Question {
   id: string;
@@ -32,8 +33,9 @@ const SpaceRepetitionQuizContainer: React.FC = () => {
       ...prev,
       [currentQuestionIndex]: option,
     }));
+  
   };
-
+  
   const handleNextQuestion = () => {
     if (answers[currentQuestionIndex] === questions[currentQuestionIndex].correctAnswer) {
       setScore((prevScore) => prevScore + 1);
@@ -50,12 +52,14 @@ const SpaceRepetitionQuizContainer: React.FC = () => {
   const handleSubmitQuiz = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-
+  
+    const toastId = toast.loading("Submitting quiz...");
+  
     const results = questions.map((question, index) => ({
       wordId: question.id,
       isCorrect: question.correctAnswer === answers[index],
     }));
-
+  
     try {
       const token = await getToken();
       const response = await fetch(
@@ -69,22 +73,37 @@ const SpaceRepetitionQuizContainer: React.FC = () => {
           body: JSON.stringify({ userId, results }),
         }
       );
+  
+      if (!response.ok) {
+        throw new Error("Failed to submit quiz results");
+      }
+  
       const data = await response.json();
       console.log("Spaced repetition results saved:", data);
+      // Dismiss loading toast and show success message
+    toast.dismiss(toastId);
+    toast.success("Quiz results saved successfully!");
     } catch (err) {
       console.error("Error saving spaced repetition result:", err);
+      toast.error("Failed to save quiz results.");
     } finally {
+      toast.dismiss(toastId); // Remove loading toast
       setIsSubmitting(false);
     }
   };
+  
 
   const fetchQuestions = () => {
     if (!userId) {
       setError("User ID is required");
+      toast.error("User ID is required");
       return;
     }
   
     let isMounted = true;
+  
+    // Show loading toast and store its ID
+    const toastId = toast.loading("Loading questions...");
   
     getToken()
       .then((token) =>
@@ -95,16 +114,29 @@ const SpaceRepetitionQuizContainer: React.FC = () => {
       .then((response) => {
         if (!isMounted) return;
         setStatus(response.status);
-        if (response.status === 404) throw new Error("No questions found");
+  
+        if (response.status === 404) {
+          throw new Error("No questions found");
+        }
         if (response.status === 202) return [];
-        if (!response.ok) throw new Error("Failed to fetch questions");
+        if (!response.ok) {
+          throw new Error("Failed to fetch questions");
+        }
         return response.json();
       })
       .then((data: Question[]) => {
-        if (isMounted) setQuestions(data);
+        if (isMounted) {
+          setQuestions(data);
+          toast.dismiss(toastId);
+          toast.success("Questions loaded successfully!");
+        }
       })
       .catch((err) => {
-        if (isMounted) setError(err.message);
+        if (isMounted) {
+          setError(err.message);
+          toast.dismiss(toastId);
+          toast.error(err.message);
+        }
       });
   
     return () => {
@@ -112,13 +144,16 @@ const SpaceRepetitionQuizContainer: React.FC = () => {
     };
   };
   
+  
   const handleRetry = () => {
     setQuizFinished(false);
     setCurrentQuestionIndex(0);
     setScore(0);
     setAnswers({});
-    fetchQuestions(); // Fetch fresh questions from the backend
+    fetchQuestions();
+    toast.success("Quiz restarted!");
   };
+  
   
 
   if (status === 404) return <NotFoundAnimation />;

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import ShareModal from "./ShareModal";
 import ReactConfetti from "react-confetti";
+import toast from "react-hot-toast";
 
 interface QuizResultProps {
   score: number;
@@ -16,6 +17,16 @@ const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry 
   const [width, setWidth] = useState<number>(window.innerWidth);
   const [height, setHeight] = useState<number>(window.innerHeight);
 
+  useEffect(() => {
+    if (score > 6) {
+      toast.success("Great job! You did amazing! 🎉");
+    } else {
+      toast("Keep practicing! You'll do better next time!", {
+        icon: "💪",
+      });
+    }
+  }, [score]);
+  
   useEffect(() => {
     const updateSize = () => {
       setWidth(window.innerWidth);

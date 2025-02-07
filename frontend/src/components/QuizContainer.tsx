@@ -4,6 +4,7 @@ import QuizQuestion from "./QuizQuestion";
 import QuizResult from "./QuizResult";
 import NotFoundAnimation from "../animations/NotFoundAnimation";
 import NotEnoughWordsPage from "@/animations/NotEnoughWordPage";
+import toast from "react-hot-toast";
 
 interface Question {
   id: number;
@@ -60,14 +61,17 @@ const QuizContainer: React.FC = () => {
 
   // Submit quiz results to backend
   const handleSubmitQuiz = () => {
-    if (isSubmitting) return; // Prevent multiple submissions
+    if (isSubmitting) return;
     setIsSubmitting(true);
-
+  
+    // Store the toast ID so we can dismiss it later
+    const toastId = toast.loading("Submitting quiz...");
+  
     const results = questions.map((question, index) => ({
       wordId: question.id,
       isCorrect: selectedOptions[index] === question.correctAnswer,
     }));
-
+  
     getToken()
       .then((token) => {
         return fetch(`http://localhost:5000/api/v1/quiz-questions/spacedQuizResult/?userId=${userId}`, {
@@ -82,10 +86,22 @@ const QuizContainer: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("Spaced repetition results saved:", data);
+  
+        // Dismiss loading toast and show success message
+        toast.dismiss(toastId);
+        toast.success("Quiz results saved successfully!");
       })
-      .catch((err) => console.error("Error saving spaced repetition result:", err))
+      .catch((err) => {
+        console.error("Error saving spaced repetition result:", err);
+  
+        // Dismiss loading toast and show error message
+        toast.dismiss(toastId);
+        toast.error("Failed to save quiz results.");
+      })
       .finally(() => setIsSubmitting(false));
   };
+  
+  
   const fetchQuestions = () => {
     getToken()
       .then((token) => {
@@ -99,13 +115,22 @@ const QuizContainer: React.FC = () => {
       })
       .then((response) => {
         setStatus(response.status);
-        if (response.status === 404) throw new Error("No questions found");
+        if (response.status === 404) {
+          toast.error("No questions found!");
+          throw new Error("No questions found");
+        }
         if (response.status === 202) return [];
-        if (!response.ok) throw new Error("Failed to fetch questions");
+        if (!response.ok) {
+          toast.error("Failed to fetch questions");
+          throw new Error("Failed to fetch questions");
+        }
         return response.json();
       })
       .then((data: Question[]) => setQuestions(data))
-      .catch((err) => setError(err.message));
+      .catch((err) => {
+        setError(err.message);
+        toast.error(err.message);
+      });
   };
   
   // Reset quiz
@@ -115,6 +140,7 @@ const QuizContainer: React.FC = () => {
     setScore(0);
     setSelectedOptions({});
     fetchQuestions(); // Fetch fresh questions from the backend
+    toast.success("Quiz restarted!");
   };
   
   // Handle cases where there are no questions or errors
