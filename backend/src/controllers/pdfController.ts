@@ -21,7 +21,7 @@ const processPdf = async (req: Request, res: Response) => {
   }
 
   try {
-    await saveBookInDB(file.path, userId, req.body.title);
+    await saveBookInDB(file.path, userId, req.body.title, res.locals);
 
     res
       .status(201)

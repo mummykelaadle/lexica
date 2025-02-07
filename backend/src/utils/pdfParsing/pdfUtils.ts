@@ -89,7 +89,7 @@ async function processPage(pageNo: number, wordsInPage: string[]): Promise<{ pag
   // NOTE: if a word is not added in db, its id will be returned as ""
 }
 
-async function saveBookInDB(path: string, userId: string, title: string) {
+async function saveBookInDB(path: string, userId: string, title: string, locals: any): Promise<void> {
   const pdfDocument = await pdfjsLib.getDocument(path).promise;
 
   const pagePromises = getPagesPromises(pdfDocument);
@@ -126,6 +126,7 @@ async function saveBookInDB(path: string, userId: string, title: string) {
     ownerId: userId,
     title: title || "Book Title",
     pages: pageIds,
+    coverUrl: locals.coverUrl,
   });
 
   await book.save();
