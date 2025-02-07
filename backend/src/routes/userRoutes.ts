@@ -23,4 +23,6 @@ router.delete("/favorites/:wordId", userController.removeWordFromFavorites);
 
 // Get all books of a user
 router.get("/books", userController.getBooksByUserId);
+
+router.get("/level", userController.getUserLevel);
 export default router;
