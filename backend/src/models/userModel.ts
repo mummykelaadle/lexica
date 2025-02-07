@@ -5,6 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  isOnboardingCompleted: boolean;  //onboarding test completion status
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -12,6 +13,7 @@ const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  isOnboardingCompleted: { type: Boolean, default: false }, //default value is false
 });
 
 // Hashing password before saving the user
