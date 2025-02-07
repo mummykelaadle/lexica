@@ -23,4 +23,7 @@ router.delete("/favorites/:wordId", userController.removeWordFromFavorites);
 
 // Get all books of a user
 router.get("/books", userController.getBooksByUserId);
+
+// save user score
+router.post("/onBoardingResult", userController.saveUserScore);
 export default router;

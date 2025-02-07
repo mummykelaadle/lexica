@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const OnboardingTest: React.FC = () => {
   const questions = [
@@ -79,26 +80,43 @@ const OnboardingTest: React.FC = () => {
     setSelectedOption(option);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption !== null) {
-      // Check if the answer is correct
-      if (selectedOption === questions[currentQuestion].answer) {
-        setScore(score + 1);
-      }
-
-      // Move to the next question
+      setScore(prevScore => {
+        const newScore = selectedOption === questions[currentQuestion].answer ? prevScore + 1 : prevScore;
+  
+        if (currentQuestion === questions.length - 1) {
+          setTestCompleted(true);
+          if (newScore >= questions.length * 0.6) {
+            setAnimationClass("scale-up");
+          } else {
+            setAnimationClass("shake");
+          }
+        }
+  
+        return newScore;
+      });
+  
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setSelectedOption(null);
-      } else {
-        // Test completed, show score and apply animation based on score
-        setTestCompleted(true);
-        if (score >= questions.length * 0.8) {
-          setAnimationClass("scale-up"); // For high scores (80% or more)
-        } else {
-          setAnimationClass("shake"); // For low scores
-        }
       }
+    }
+  };
+  
+  // Send score to backend after test completion
+  React.useEffect(() => {
+    if (testCompleted) {
+      sendScoreToBackend(score);
+    }
+  }, [testCompleted]); 
+  
+
+  const sendScoreToBackend = async (score: number) => {
+    try {
+      await axios.post("http://localhost:5000/api/v1/user/onBoardingResult", { score }, { withCredentials: true });
+    } catch (error) {
+      console.error("Failed to send score to backend", error);
     }
   };
 
