@@ -1,9 +1,4 @@
-<h1 align="center"><i>Lexica</i></h1>
-<p align="center">
-  <img src="https://i.postimg.cc/njCM24kx/woc.jpg" height=60px>
-</p>
-
-
+![cover](https://github.com/user-attachments/assets/a00cb1bf-0b07-4b29-83a8-2635e2bd8dbe)
 ## 📖 Introduction
 
 Lexica enhances the reading experience by allowing users to seamlessly look up unfamiliar words without interrupting their flow. Key features include:
@@ -68,6 +63,7 @@ Lexica is built using modern web technologies:
   <a href="https://weekendofcode.computercodingclub.in/">
     <img src="https://i.postimg.cc/Z9fC676j/devjam.jpg" height=60px>
   </a>
+  <img src="https://i.postimg.cc/njCM24kx/woc.jpg" height=60px>
 </p>
 
 🏆 _Built with passion during_ [Weekend of Code](https://weekendofcode.computercodingclub.in/).
