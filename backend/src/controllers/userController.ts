@@ -195,10 +195,10 @@ const getBooksByUserId = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = getAuth(req); // Get userId from Clerk
     logger.info(`fetching all books for userId:${userId}`)
-    const books = await Book.find({ ownerId: userId }).select("_id title");
+    const books = await Book.find({ ownerId: userId }).select("_id title coverUrl");
 
     // Map over books to return an array of book objects with id and title
-    const bookList = books.map(book => ({ bookId: book._id, title: book.title }));
+    const bookList = books.map(book => ({ bookId: book._id, title: book.title, coverUrl: book.coverUrl }));
 
     res.json({ books: bookList });
   } catch (error) {
@@ -231,8 +231,6 @@ const saveUserScore = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: 'Failed to save score.' });
   }
 };
-
-
 
 // Define Levels
 const levels = [

@@ -1,11 +1,7 @@
 import { useGetUserBooks } from "@/lib/useGetUserBooks";
 import { Link } from "react-router-dom";
 import { BooksLoading } from "@/animations/BooksLoading";
-
-interface Book {
-  bookId: string;
-  title: string;
-}
+import IBook from "@/interfaces/IBook";
 
 const BookList = () => {
   const { loading, error, books } = useGetUserBooks();
@@ -18,17 +14,17 @@ const BookList = () => {
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}>
-    
+
         {/* Blog Cards Section */}
         <div className="w-full bg-white bg-opacity-40 backdrop-blur-lg p-5 dark:bg-gray-700">
           <div className="flex flex-wrap justify-center gap-6">
-            {!loading && !error && books.map((book:Book, index:number) => (
+            {!loading && !error && books.map((book: IBook, index: number) => (
               //to send actual last count to component once backend fn available
               <Link to={`/feed/${0}/${book.bookId}`} key={index} className="relative flex-shrink-0 w-[250px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden group">
                 {/* Book image with hover effect */}
                 <div className="w-full h-full">
                   <img //TODO:set actual image link once backend fn available
-                    src="https://miblart.com/wp-content/uploads/2022/11/61718053-678x1024.jpg"
+                    src={book.coverUrl}
                     alt={book.title}
                     className="w-full h-full object-cover rounded-t-lg group-hover:opacity-50 transition-opacity duration-300"
                   />
@@ -50,8 +46,8 @@ const BookList = () => {
                 </div>
               </Link>
             ))}
-            {!error && loading&&<BooksLoading/>}
-            {error&&<p>error loading books...</p>}
+            {!error && loading && <BooksLoading />}
+            {error && <p>error loading books...</p>}
           </div>
         </div>
       </div>

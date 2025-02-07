@@ -34,7 +34,7 @@ const getBookWithDetails = (req: Request, res: Response) => {
       if (!book) {
         return res.status(404).json({ message: "Book not found" });
       }
-      if(book.ownerId!=userId){
+      if (book.ownerId != userId) {
         return res.status(401).json({ message: "Unauthorized access. You are not the owner" });
       }
       // Send the populated book as the response
@@ -84,7 +84,7 @@ const getBookPages = (req: Request, res: Response) => {
       if (!book) {
         return res.status(404).json({ error: 'Book not found' });
       }
-      if(book.ownerId!=userId){
+      if (book.ownerId != userId) {
         return res.status(401).json({ message: "Unauthorized access. You are not the owner" });
       }
       // Send the populated pages as the response
@@ -162,9 +162,9 @@ const getBookTitle = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if(book.ownerId!=userId){
-      logger.info('ownerId'+book.ownerId);
-      logger.info('userId'+userId);
+    if (book.ownerId != userId) {
+      logger.info('ownerId' + book.ownerId);
+      logger.info('userId' + userId);
       res.status(401).json({ message: "Unauthorized access. You are not the owner" });
       return;
     }
@@ -206,4 +206,4 @@ const getTotalPageCount = async (req: Request, res: Response): Promise<void> => 
 };
 
 
-export default { getBookWithDetails, getBookPages, sortAndUpdatePages,getBookTitle,getTotalPageCount };
+export default { getBookWithDetails, getBookPages, sortAndUpdatePages, getBookTitle, getTotalPageCount };

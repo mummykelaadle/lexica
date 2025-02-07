@@ -2,10 +2,9 @@ import {
   History,
   Home,
   ShieldQuestionIcon,
-  Search,
   CircleUser,
-  LogOut,
-  Heart
+  Heart,
+  NotebookPen
 } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import {
@@ -47,6 +46,11 @@ const items = [
     title: "Favorites",
     url: "/favorites",
     icon: Heart,
+  },
+  {
+    title: "Revision",
+    url: "/revision",
+    icon: NotebookPen,
   },
 ];
 
