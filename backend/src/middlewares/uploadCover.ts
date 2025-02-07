@@ -32,6 +32,8 @@ const uploadCover = async (req: Request, res: Response, next: NextFunction) => {
       await unlinkFile(resizedImagePath);
 
       logger.info(`Cover uploaded successfully`);
+      // Putting the cover URL in res.locals so that it can be accessed in the next middleware
+      // for some reason if we put it in req.locals, it doesn't work
       res.locals.coverUrl = result.secure_url;
       logger.info(`Cover URL: ${res.locals.coverUrl}`);
     } catch (error) {

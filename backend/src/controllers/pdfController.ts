@@ -6,6 +6,7 @@ import Book from "../models/bookModel";
 import logger from "../utils/logger";
 import { getAuth } from "@clerk/express";
 import { fetchWordDetailsUsingDatamuse } from "../external/dictionaryApi";
+import loggger from "../utils/logger";
 
 const processPdf = async (req: Request, res: Response) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -73,10 +74,12 @@ const processPdf = async (req: Request, res: Response) => {
 
     const { userId } = getAuth(req); // Get userId from Clerk
     // Create the book object and associate pages
+    loggger.info(`Creating book for user: ${userId}, coverUrl: ${res.locals.coverUrl}`);
     const book = new Book({
-      ownerId:userId,
+      ownerId: userId,
       title: req.body.title || "Book Title",
       pages: pageIds,
+      coverUrl: res.locals.coverUrl,
     });
 
     await book.save();
