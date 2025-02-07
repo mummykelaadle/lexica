@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Confetti from "react-confetti";
 import axios from "axios";
 
 import guruji from "../assets/guruji.jpg";
@@ -31,7 +30,6 @@ const LevelBar = () => {
   const [currentLevel, setCurrentLevel] = useState<Level>({ name: "", threshold: 0 });
   const [nextLevel, setNextLevel] = useState<Level>({ name: "", threshold: 0 });
   const [progress, setProgress] = useState<number>(0);
-  const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchLevelData = async () => {
@@ -49,14 +47,14 @@ const LevelBar = () => {
           console.warn("No word history found. Using default values.");
           setWordCount(0);
           setCurrentLevel({ name: "NewBie", threshold: 0 });
-          setNextLevel({ name: "Next Level", threshold: 5 });
+          setNextLevel({ name: "Novice", threshold: 5 });
           setProgress(0);
         }
       } catch (error) {
         console.error("Error fetching level data:", error);
         setWordCount(0);
         setCurrentLevel({ name: "NewBie", threshold: 0 });
-        setNextLevel({ name: "Next Level", threshold: 5 });
+        setNextLevel({ name: "Novice", threshold: 5 });
         setProgress(0);
       }
     };
@@ -66,7 +64,7 @@ const LevelBar = () => {
   
   return (
     <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg">
-      {showConfetti && <Confetti />}
+    
       <h2 className="text-xl font-bold flex items-center">
         <img
           src={levelImages[String(currentLevel.threshold)] || ""}

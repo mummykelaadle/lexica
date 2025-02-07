@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
@@ -12,8 +12,19 @@ interface QuizResultProps {
 }
 
 const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry }) => {
-  // Define the confetti parameters
-  const [width, height] = [window.innerWidth, window.innerHeight];
+  // Use state to handle window size dynamically
+  const [width, setWidth] = useState<number>(window.innerWidth);
+  const [height, setHeight] = useState<number>(window.innerHeight);
+
+  useEffect(() => {
+    const updateSize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   return (
     <Card className="text-center p-6">
@@ -25,7 +36,7 @@ const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry 
         
         {/* Confetti effect for score above 6 */}
         {score > 6 && <ReactConfetti width={width} height={height} />}
-        
+
         {score > 6 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -53,7 +64,8 @@ const QuizResult: React.FC<QuizResultProps> = ({ score, totalQuestions, onRetry 
         >
           Retry Quiz
         </button>
-        <ShareModal score={score} total={10} />
+
+        <ShareModal score={score} total={totalQuestions} />
       </CardContent>
     </Card>
   );

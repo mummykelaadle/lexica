@@ -19,9 +19,9 @@ import NotFound from "./pages/NotFound"; // Add this line
 import Layout from "./components/Layout";
 import FavoriteWords from "./pages/FavoriteWords";
 
-import LevelBar from "./pages/LevelBar";
 
 import OnboardingTest from "./pages/OnBoardingTest";
+import SpaceQuestionsPage from "./pages/SpaceQuestionsPage";
 
 
 const App: React.FC = () => {
@@ -43,11 +43,11 @@ const App: React.FC = () => {
             <Route path="/onboarding-test" element={<OnboardingTest />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/revision" element={<SpaceQuestionsPage />} />
             <Route path="/history" element={<WordHistory />} />
             <Route path="/favorites" element={<FavoriteWords/>} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/level" element={<LevelBar />} />
             <Route path="/feed/:lastCount/:bookId" element={<WordFeedPage />} />
           </Route>
         </Route>

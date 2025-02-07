@@ -1,7 +1,7 @@
 import WordHistory from "../models/wordHistory";
 import Word from "../models/wordModel";
 import { Request, Response, NextFunction } from 'express';
-
+import SpacedRepetitionHistory from "../models/SpacedRepetitionHistory ";
 const generateQuiz = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.query.userId; // Get userId from query parameter
@@ -18,12 +18,12 @@ const generateQuiz = async (req: Request, res: Response, next: NextFunction) => 
       });
     }
 
-       // Check if there are not enough words (less than 3) to generate the quiz
-       if (wordHistory.wordEntries.length < 4) {
-        return res.status(202).json({ //202 indicates that a request has been accepted for processing but has not yet been completed
-          message: "Not enough word history to generate a quiz. Add more words and try again."
-        });
-      }
+    // Check if there are not enough words (less than 3) to generate the quiz
+    if (wordHistory.wordEntries.length < 4) {
+      return res.status(202).json({ //202 indicates that a request has been accepted for processing but has not yet been completed
+        message: "Not enough word history to generate a quiz. Add more words and try again."
+      });
+    }
 
 
     // Generate quiz questions from the word history
@@ -32,12 +32,10 @@ const generateQuiz = async (req: Request, res: Response, next: NextFunction) => 
         const word = await Word.findById(wordId);
 
         if (!word) {
-          console.warn(`No word found for wordId: ${wordId}`);
           return null;
         }
 
         if (!word.meanings || word.meanings.length === 0) {
-          console.warn(`No meanings found for wordId: ${wordId}`);
           return null;
         }
 
@@ -79,21 +77,117 @@ function fisherYatesShuffle<T>(array: T[]): T[] {
 }
 
 // Generate incorrect options dynamically
+
+
+const generateSpacedRepetitionQuiz = async (req: Request, res: Response) => {
+  try {
+    const userId = req.query.userId;
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Fetch spaced repetition history words with mistakes
+    const spacedRepetitionWords = await SpacedRepetitionHistory.find({ userId })
+      .populate("wordId")
+      .sort({ mistakeCount: -1, lastTestedAt: 1 }); // Sort by mistake count (descending), then by last tested date
+
+    // If no spaced repetition words, return an empty response
+    if (!spacedRepetitionWords || spacedRepetitionWords.length === 0) {
+      return res.status(404).json({ message: "No words to test, please answer some questions first." });
+    }
+
+    let selectedWords: { id: string; text: string; options: string[]; correctAnswer: string }[] = [];
+    let startIndex = 0;
+    const maxQuestions = 10;
+
+    // Loop until we have at least 10 valid questions
+    while (selectedWords.length < maxQuestions && startIndex < spacedRepetitionWords.length) {
+      // Get the next set of words
+      const wordsToProcess = spacedRepetitionWords.slice(startIndex, startIndex + maxQuestions - selectedWords.length);
+      startIndex += wordsToProcess.length;
+
+      // Generate quiz questions for the selected words
+      const questions = await Promise.all(
+        wordsToProcess.map(async (entry) => {
+          const word = await Word.findById(entry.wordId);
+          if (!word || !word.meanings || word.meanings.length === 0) return null; // Only proceed if the word has meanings
+          const correctMeaning = word.meanings[0];
+          const incorrectOptions = await generateIncorrectOptions(correctMeaning, word.word);
+          const options = fisherYatesShuffle([correctMeaning, ...incorrectOptions]);
+
+          return {
+            id: (word._id).toString(),
+            text: `What is the meaning of '${word.word}'?`,
+            options,
+            correctAnswer: correctMeaning,
+          };
+        })
+      );
+
+      // Filter out any null or invalid questions (i.e., those with no meanings)
+      const validQuestions = questions.filter((question) => question !== null);
+
+      // Add valid questions to selectedWords
+      selectedWords = selectedWords.concat(validQuestions);
+    }
+
+    // If there are not enough valid questions, return a message
+    if (selectedWords.length === 0) {
+      return res.status(200).json({ message: "Not enough valid questions available." });
+    }
+
+    // Limit the number of valid questions to a maximum of 10
+    res.json(selectedWords.slice(0, 10));
+  } catch (error) {
+    console.error("Error generating spaced repetition quiz:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const handleSpacedRepetitionResult = async (req: Request, res: Response) => {
+  try {
+    const { userId, results } = req.body;
+
+    for (const result of results) {
+      const { wordId, isCorrect } = result;
+
+      if (isCorrect) {
+        // If correct, remove from spaced repetition history
+        await SpacedRepetitionHistory.deleteOne({ userId, wordId });
+      } else {
+        // If incorrect, increment mistake count or create new entry
+        const existingRecord = await SpacedRepetitionHistory.findOne({ userId, wordId });
+        if (existingRecord) {
+          existingRecord.mistakeCount += 1;
+          existingRecord.lastTestedAt = new Date();
+          await existingRecord.save();
+        } else {
+          await SpacedRepetitionHistory.create({ userId, wordId, mistakeCount: 1, lastTestedAt: new Date() });
+        }
+      }
+    }
+
+    res.json({ message: "Spaced repetition results processed successfully" });
+  } catch (error) {
+    console.error("Error handling spaced repetition result:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+// Helper function for incorrect options (same as your original code)
 async function generateIncorrectOptions(correctMeaning: string, word: string): Promise<string[]> {
   try {
-    // Fetch 3 random words (excluding the given word) with their meanings
     const randomWords = await Word.aggregate([
-      { $match: { word: { $ne: word }, meanings: { $exists: true, $not: { $size: 0 } } } }, // Exclude the correct word and ensure words have meanings
-      { $sample: { size: 3 } }, // Get 3 random words
-      { $project: { meanings: { $slice: ["$meanings", 1] } } }, // Take only the first meaning
+      { $match: { word: { $ne: word }, meanings: { $exists: true, $not: { $size: 0 } } } },
+      { $sample: { size: 3 } },
+      { $project: { meanings: { $slice: ["$meanings", 1] } } },
     ]);
-
-    return randomWords.map(w => w.meanings[0] || "Unknown");
+    return randomWords.map((w) => w.meanings[0] || "Unknown");
   } catch (error) {
     console.error("Error generating incorrect options:", error);
     return ["Oops, no meaning found!", "Hmm... meaning lost in translation", "Looks like this one's a mystery!"];
-
   }
 }
 
-export default { generateQuiz };
+
+
+export default { generateQuiz, generateSpacedRepetitionQuiz, handleSpacedRepetitionResult };
