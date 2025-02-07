@@ -7,7 +7,7 @@ import logger from '../logger';
 import Mongoose from 'mongoose';
 import Page from '../../models/pageModel';
 import Book from '../../models/bookModel';
-
+import { create, Difficulty } from 'difficulty';
 
 function getPagesPromises(book: any): Promise<IPagePromise>[] {
   const pages = [];
@@ -53,7 +53,7 @@ const getWordIdsBatch = async (words: string[]): Promise<(string | null)[]> => {
 
 //  ek page ke liye, pageno. and array of word id return
 
-async function processPage(pageNo: number, wordsInPage: string[]): Promise<{ pageNo: number, wordIds: (string)[] }> {
+async function processPage(pageNo: number, wordsInPage: string[], difficulty: Difficulty): Promise<{ pageNo: number, wordIds: (string)[] }> {
   const wordIdBatch = await getWordIdsBatch(wordsInPage);
 
   // Parallel processing of words
@@ -66,7 +66,7 @@ async function processPage(pageNo: number, wordsInPage: string[]): Promise<{ pag
 
     try {
       logger.info(`Fetching data for word: ${word}`);
-      const wordData = await fetchWordDetailsUsingDatamuse(word);
+      const wordData = await fetchWordDetailsUsingDatamuse(word, difficulty);
       logger.info(`Fetched data for word: ${word}`);
       if (wordData) {
         logger.info(`Creating new word record for word: ${word}`);
@@ -90,6 +90,9 @@ async function processPage(pageNo: number, wordsInPage: string[]): Promise<{ pag
 }
 
 async function saveBookInDB(path: string, userId: string, title: string, locals: any): Promise<void> {
+  const difficulty = await create({
+    levelsThreshold: [30000, 15000, 5000, 1000]
+  });
   const pdfDocument = await pdfjsLib.getDocument(path).promise;
 
   const pagePromises = getPagesPromises(pdfDocument);
@@ -101,7 +104,7 @@ async function saveBookInDB(path: string, userId: string, title: string, locals:
   const proccessedPages: Promise<{ pageNo: number, wordIds: string[] }>[] = [];
 
   wordsInPages.map((words: string[], index: number) => {
-    proccessedPages.push(processPage(index, words));
+    proccessedPages.push(processPage(index, words, difficulty));
   });
 
   await Promise.all(proccessedPages);

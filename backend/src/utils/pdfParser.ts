@@ -2,6 +2,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { fetchWordDetailsUsingDatamuse } from '../external/dictionaryApi'; // Your dictionary API handler
 import Word from '../models/wordModel'; // Importing the Mongoose model
 import logger from './logger';
+import { calculateWordDifficulty } from "../utils/word-difficulty/getWordDifficulty";
 
 interface WordPageObject {
   [key: number]: string[];
@@ -67,8 +68,7 @@ async function extractWordsFromPdf(filePath: string): Promise<WordPageObject> {
 
         // Create the Word document in DB
         const { meanings, synonyms, antonyms, exampleSentences } = wordData;
-        const difficulty = Math.random(); // Replace with proper difficulty calculation if needed
-        // TO-DO:create difficulty function/use API
+        const difficulty = await calculateWordDifficulty(word);
 
         await Word.create({// finally the word along with all of its details is saved in the DB
           word,
