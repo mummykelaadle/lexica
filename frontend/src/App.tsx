@@ -18,6 +18,7 @@ import { ThemeProvider } from "@/components/theme-provider"; // Make sure the pa
 import NotFound from "./pages/NotFound"; // Add this line
 import Layout from "./components/Layout";
 import FavoriteWords from "./pages/FavoriteWords";
+import OnboardingTest from "./pages/OnBoardingTest";
 
 const App: React.FC = () => {
   return (
@@ -35,6 +36,7 @@ const App: React.FC = () => {
               </Layout>
             }
           >
+            <Route path="/onboarding-test" element={<OnboardingTest />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/history" element={<WordHistory />} />
