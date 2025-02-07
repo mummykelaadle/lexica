@@ -71,17 +71,34 @@ const OnboardingTest: React.FC = () => {
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+  const [testCompleted, setTestCompleted] = useState(false);
+  const [animationClass, setAnimationClass] = useState("");
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedOption(null);
-    } else {
-      alert("Test submitted successfully!");
+    if (selectedOption !== null) {
+      // Check if the answer is correct
+      if (selectedOption === questions[currentQuestion].answer) {
+        setScore(score + 1);
+      }
+
+      // Move to the next question
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedOption(null);
+      } else {
+        // Test completed, show score and apply animation based on score
+        setTestCompleted(true);
+        if (score >= questions.length * 0.8) {
+          setAnimationClass("scale-up"); // For high scores (80% or more)
+        } else {
+          setAnimationClass("shake"); // For low scores
+        }
+      }
     }
   };
 
@@ -89,43 +106,49 @@ const OnboardingTest: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="p-6 max-w-xl w-full bg-card text-foreground shadow-lg rounded-md">
         <h2 className="text-xl font-bold mb-4 text-center">Onboarding English Proficiency Test</h2>
-        <div className="mb-4 p-4 bg-muted rounded-md shadow-lg">
-          <p className="font-semibold text-primary">{currentQuestion + 1}. {questions[currentQuestion].question}</p>
-          {questions[currentQuestion].options.length > 0 ? (
-            <ul className="list-none pl-0 mt-2">
-              {questions[currentQuestion].options.map((option, i) => (
-                <li
-                  key={i}
-                  className={`mt-1 p-2 rounded-md cursor-pointer transition-colors 
-                    ${selectedOption === option ? 
-                      (option === questions[currentQuestion].answer ? "bg-green-500 text-white" : "bg-red-500 text-white") 
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}
-                  `}
-                  onClick={() => handleSelect(option)}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <textarea
-              className="border p-2 w-full bg-background text-foreground"
-              placeholder="Write your answer here..."
-              onChange={(e) => setSelectedOption(e.target.value)}
-            />
-          )}
-          <button 
-            className="mt-4 p-2 bg-primary text-primary-foreground rounded-md transition-colors hover:bg-primary/90 disabled:opacity-50 w-full" 
-            onClick={handleNext} 
-            disabled={selectedOption === null}
-          >
-            {currentQuestion === questions.length - 1 ? "Submit Test" : "Next Question"}
-          </button>
-        </div>
+        {!testCompleted ? (
+          <div className="mb-4 p-4 bg-muted rounded-md shadow-lg">
+            <p className="font-semibold text-primary">{currentQuestion + 1}. {questions[currentQuestion].question}</p>
+            {questions[currentQuestion].options.length > 0 ? (
+              <ul className="list-none pl-0 mt-2">
+                {questions[currentQuestion].options.map((option, i) => (
+                  <li
+                    key={i}
+                    className={`mt-1 p-2 rounded-md cursor-pointer transition-colors 
+                      ${selectedOption === option ? 
+                        (option === questions[currentQuestion].answer ? "bg-green-500 text-white" : "bg-red-500 text-white") 
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}
+                    `}
+                    onClick={() => handleSelect(option)}
+                  >
+                    {option}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <textarea
+                className="border p-2 w-full bg-background text-foreground"
+                placeholder="Write your answer here..."
+                onChange={(e) => setSelectedOption(e.target.value)}
+              />
+            )}
+            <button 
+              className="mt-4 p-2 bg-primary text-primary-foreground rounded-md transition-colors hover:bg-primary/90 disabled:opacity-50 w-full" 
+              onClick={handleNext} 
+              disabled={selectedOption === null}
+            >
+              {currentQuestion === questions.length - 1 ? "Submit Test" : "Next Question"}
+            </button>
+          </div>
+        ) : (
+          <div className={`p-4 bg-muted rounded-md shadow-lg ${animationClass}`}>
+            <h3 className="font-bold text-primary text-center">Test Completed!</h3>
+            <p className="mt-2 text-center text-lg">Your score: {score} out of {questions.length}</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default OnboardingTest;
-
