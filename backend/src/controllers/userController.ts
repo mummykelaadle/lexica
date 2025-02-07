@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 import FavouriteWord from "../models/favouriteWord";
 import mongoose from "mongoose";
 import Book from '../models/bookModel';
+import OnboardingTest from '../models/onBoardingTest';
 
 const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -206,6 +207,34 @@ const getBooksByUserId = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const saveUserScore = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { score } = req.body;
+    const { userId } = getAuth(req); // Get userId from Clerk
+
+    if (!userId || typeof score !== 'number') {
+      res.status(400).json({ error: 'userId and a valid numeric score are required' });
+      return;
+    }
+
+    const newScore = new OnboardingTest({
+      userId,
+      score,
+      dateTaken: new Date(),
+    });
+
+    await newScore.save();
+    res.status(201).json({ message: 'Score saved successfully!', score: newScore });
+
+  } catch (error: any) {
+    console.error('Error saving score:', error.message);
+    res.status(500).json({ error: 'Failed to save score.' });
+  }
+};
+
+
+export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, removeWordFromFavorites, isWordFavorite,getBooksByUserId, saveUserScore }
+
 // Define Levels
 const levels = [
   { name: "NewBie",  threshold: 0 },  // Just started, confused reader  
@@ -268,6 +297,5 @@ const getUserLevel = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-
-
 export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords,getUserLevel, removeWordFromFavorites, isWordFavorite,getBooksByUserId };
+

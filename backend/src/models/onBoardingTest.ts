@@ -1,13 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IOnboardingTest extends Document {
-  userId: Schema.Types.ObjectId;
+  userId: String;
   score: number;
   dateTaken: Date;
 }
 
 const onboardingTestSchema = new Schema<IOnboardingTest>({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: String,required: true },
   score: { type: Number, required: true },
   dateTaken: { type: Date, default: Date.now }
 });
