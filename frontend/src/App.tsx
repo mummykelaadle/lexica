@@ -18,6 +18,7 @@ import { ThemeProvider } from "@/components/theme-provider"; // Make sure the pa
 import NotFound from "./pages/NotFound"; // Add this line
 import Layout from "./components/Layout";
 import FavoriteWords from "./pages/FavoriteWords";
+import LevelBar from "./pages/LevelBar";
 
 const App: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ const App: React.FC = () => {
             <Route path="/favorites" element={<FavoriteWords/>} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/level" element={<LevelBar />} />
             <Route path="/feed/:lastCount/:bookId" element={<WordFeedPage />} />
           </Route>
         </Route>
