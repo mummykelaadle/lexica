@@ -42,7 +42,7 @@ const BookList = () => {
                 <div className="absolute bottom-0 left-0 right-0 bg-gray-300 h-2 rounded-b-lg">
                   <div
                     className="bg-blue-600 h-full rounded-b-lg"
-                    style={{ width: `${50}%` }} // TODO: set actual progress once backend fn present
+                    style={{ width: `${book.progress}%` }} // TODO: set actual progress once backend fn present
                   ></div>
                 </div>
               </Link>
