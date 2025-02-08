@@ -8,7 +8,7 @@ const BookList = () => {
 
   return (
     <div className='min-w-full m-auto'>
-      <div className="relative min-h-screen flex flex-col items-center bg-cover bg-fixed flex-wrap dark:bg-gray-800" style={{
+      <div className="relative min-h-screen flex flex-col items-center bg-cover bg-fixed flex-wrap overflow-y-scroll" style={{
         backgroundImage: "url('/images/mybackground.jpeg')",
         backgroundSize: "contain",
         backgroundPosition: "center",
@@ -16,8 +16,8 @@ const BookList = () => {
       }}>
 
         {/* Blog Cards Section */}
-        <div className="w-full bg-white bg-opacity-40 backdrop-blur-lg p-5 dark:bg-gray-700">
-          <div className="flex flex-wrap justify-center gap-6">
+        <div className="w-full bg-white bg-opacity-40 backdrop-blur-lg border rounded-md">
+          <div className="flex flex-wrap justify-center gap-6 bg-gray-50 p-5 rounded-md dark:bg-gray-700">
             {!loading && !error && books.map((book: IBook, index: number) => (
               //to send actual last count to component once backend fn available
               <Link to={`/feed/${0}/${book.bookId}`} key={index} className="relative flex-shrink-0 w-[250px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden group">

@@ -4,7 +4,7 @@ import BookList from "../components/BookList";
 import LevelBar from "./LevelBar";
 export default function Dashboard() {
   return (
-    <div>
+    <div className="max-w-[90%] mx-auto pt-10">
       <LevelBar />
       <DropZone />
       <BookList />
