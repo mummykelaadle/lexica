@@ -23,7 +23,8 @@ import FavoriteWords from "./pages/FavoriteWords";
 
 import OnboardingTest from "./pages/OnBoardingTest";
 import SpaceQuestionsPage from "./pages/SpaceQuestionsPage";
-
+import AllWord from "./pages/AllWord";
+import Words from "./components/Words";
 
 const App: React.FC = () => {
   return (
@@ -44,6 +45,7 @@ const App: React.FC = () => {
           >
             <Route path="/onboarding-test" element={<OnboardingTest />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/words" element={<Words />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/revision" element={<SpaceQuestionsPage />} />
             <Route path="/history" element={<WordHistory />} />
@@ -51,6 +53,8 @@ const App: React.FC = () => {
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/feed/:lastCount/:bookId" element={<WordFeedPage />} />
+            <Route path="/book/words/:bookId" element={<AllWord />} />
+
           </Route>
         </Route>
             <Route path="*" element={<NotFound />} />

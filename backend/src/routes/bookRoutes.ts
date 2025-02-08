@@ -4,8 +4,7 @@ import bookController from '../controllers/bookController';
 const router = express.Router();
 
 // Route returns the complete book along with all its pages and words populated
-router.get('/', bookController.getBookWithDetails);
-
+router.get("/words/:bookId", bookController.getAllWordsFromBook);
 // Route returns the specified set of pages along with all its words populated
 // see the associated controller for more information
 router.get('/pages', bookController.getBookPages);
