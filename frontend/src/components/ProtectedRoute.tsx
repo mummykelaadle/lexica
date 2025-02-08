@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/clerk-react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Spinner from "@/animations/Spinner";
 
 const ProtectedRoute = () => {
   const { isSignedIn, isLoaded } = useAuth();
@@ -13,7 +14,7 @@ const ProtectedRoute = () => {
   }, [isLoaded]);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return <Spinner />;
   }
 
   return isSignedIn ? <Outlet /> : <Navigate to="/login" replace />;

@@ -2,6 +2,7 @@ import axios from 'axios';
 import logger from '../utils/logger';
 import dotenv from 'dotenv';
 import { calculateWordDifficulty } from '../utils/word-difficulty/getWordDifficulty';
+import { Difficulty } from 'difficulty';
 
 dotenv.config();
 
@@ -59,24 +60,25 @@ const fetchWordDataUsingDictAPI = async (word: string) => {
  * @param word The word to look up
  * @returns Object containing word details or null if not found
  */
-const fetchWordDetailsUsingDatamuse = async (word: string) => {
+const fetchWordDetailsUsingDatamuse = async (word: string,difficulty:Difficulty) => {
   try {
     logger.info(`Fetching data for word: ${word}`);
 
-    // Fetch meanings
-    const meaningsResponse = await axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`);
+    // Initiate parallel requests
+    const [meaningsResponse, synonymsResponse, antonymsResponse, exampleResponse, difficulty_score] = await Promise.all([
+      axios.get(`${DATAMUSE_API_URL}?sp=${encodeURIComponent(word)}&md=d&max=5`),
+      axios.get(`${DATAMUSE_API_URL}?rel_syn=${encodeURIComponent(word)}&max=5`),
+      axios.get(`${DATAMUSE_API_URL}?rel_ant=${encodeURIComponent(word)}&max=5`),
+      axios.get(`${DATAMUSE_API_URL}?rel_trg=${encodeURIComponent(word)}&max=1`),
+      // Promise.resolve(0.7),
+      calculateWordDifficulty(word,difficulty)
+    ]);
+    logger.info(`Fetched data for word: ${word}`);
+
+    // Process results
     const meanings = meaningsResponse.data?.[0]?.defs?.map((def: string) => def.split('\t')[1]) || [];
-
-    // Fetch synonyms
-    const synonymsResponse = await axios.get(`${DATAMUSE_API_URL}?rel_syn=${encodeURIComponent(word)}&max=5`);
     const synonyms = synonymsResponse.data.map((entry: { word: string }) => entry.word);
-
-    // Fetch antonyms
-    const antonymsResponse = await axios.get(`${DATAMUSE_API_URL}?rel_ant=${encodeURIComponent(word)}&max=5`);
     const antonyms = antonymsResponse.data.map((entry: { word: string }) => entry.word);
-
-    // Fetch example sentences (fallback logic since Datamuse doesn't provide directly)
-    const exampleResponse = await axios.get(`${DATAMUSE_API_URL}?rel_trg=${encodeURIComponent(word)}&max=1`);
     const exampleSentences = exampleResponse.data[0]?.word ? `Example use: ${exampleResponse.data[0].word}` : '';
 
     const wordData: IWordData = {
@@ -84,7 +86,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
       meanings,
       synonyms,
       antonyms,
-      difficulty: await calculateWordDifficulty(word),
+      difficulty:difficulty_score,
       exampleSentences: [exampleSentences]
     };
 
@@ -95,6 +97,7 @@ const fetchWordDetailsUsingDatamuse = async (word: string) => {
     return null;
   }
 };
+
 
 export { fetchWordDataUsingDictAPI, fetchWordDetailsUsingDatamuse };
 

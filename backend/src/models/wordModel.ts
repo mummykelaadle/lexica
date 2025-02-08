@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IWord extends Document {
+  _id: mongoose.Schema.Types.ObjectId;
   word: string;
   meanings: string[];
   synonyms: string[];

@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import DropZone from "../components/DropZone";
-import BookList from "../components/BookList";
-import LevelBar from "./LevelBar";
 import Spinner from "../animations/Spinner";
+import GetWords from "./GetWords";
 
-export default function Dashboard() {
+export default function Words() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,10 +16,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="max-w-[90%] mx-auto pt-10">
-      <LevelBar />
-      <DropZone />
-      <BookList />
+    <div>
+      <GetWords />
     </div>
   );
 }

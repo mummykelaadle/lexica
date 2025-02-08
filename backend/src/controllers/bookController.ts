@@ -17,35 +17,66 @@ import { updateBookProgress } from '../utils/progress';
  * @param {Request} req - The request object containing the book ID in the body.
  * @param {Response} res - The response object used to send the response back to the client.
  */
-const getBookWithDetails = (req: Request, res: Response) => {
-  const { userId } = getAuth(req); // Get userId from Clerk
-  const { bookId } = req.body;
-  logger.info(`Fetching book with ID: ${bookId}`);
+const getBookWithDetails = async (userId: string, bookId: string) => {
+  try {
+    logger.info(`Fetching book with ID: ${bookId}`);
 
-  // Fetch the book with pages and words populated
-  Book.findById(bookId)
-    .populate({
-      path: "pages",
-      populate: {
-        path: "words",
-      },
-    })
-    .then((book) => {
-      // Check if the book exists
-      if (!book) {
-        return res.status(404).json({ message: "Book not found" });
-      }
-      if (book.ownerId != userId) {
-        return res.status(401).json({ message: "Unauthorized access. You are not the owner" });
-      }
-      // Send the populated book as the response
-      res.status(200).json(book);
-    })
-    .catch((error) => {
-      logger.error(`Error fetching book with ID: ${bookId}`, error);
-      res.status(500).json({ message: "Internal server error", error });
-    });
+    // Fetch the book with pages and words populated
+    const book = await Book.findById(bookId)
+      .populate({
+        path: "pages",
+        populate: {
+          path: "words",
+        },
+      });
+
+    if (!book) {
+      throw { status: 404, message: "Book not found" };
+    }
+
+    if (book.ownerId.toString() !== userId) { // ✅ Convert ObjectId to string
+      throw { status: 401, message: "Unauthorized access. You are not the owner" };
+    }
+    return book; // ✅ Correctly returning the book
+  } catch (error) {
+    logger.error(`Error fetching book with ID: ${bookId}`, error);
+    throw error;
+  }
 };
+
+const getAllWordsFromBook = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = getAuth(req)?.userId;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized access. User ID is missing" });
+      return 
+    }
+
+    const { bookId } = req.params;
+
+    const book = await getBookWithDetails(userId, bookId);
+
+    const words = book.pages?.flatMap((page: any) =>
+      page.words?.map((word: any) => ({
+        _id: word._id,
+        word: word.word,
+        difficulty: word.difficulty,
+        meanings: word.meanings || [],
+        synonyms: word.synonyms || [],
+        antonyms: word.antonyms || [],
+        usage: word.usage || "",
+        addedAt: word.addedAt || new Date().toISOString(),
+      }))
+    ) || [];
+    res.status(200).json({ totalWords: words.length, words });
+  } catch (error: any) {
+    console.error("Error fetching words:", error);
+    res.status(error.status || 500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+
+
 
 /**
  * Retrieves a book's pages by its ID with pagination.
@@ -210,4 +241,4 @@ const getTotalPageCount = async (req: Request, res: Response): Promise<void> => 
 };
 
 
-export default { getBookWithDetails, getBookPages, sortAndUpdatePages, getBookTitle, getTotalPageCount };
+export default { getBookWithDetails,getAllWordsFromBook, getBookPages, sortAndUpdatePages, getBookTitle, getTotalPageCount };
