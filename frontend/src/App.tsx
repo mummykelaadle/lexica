@@ -28,7 +28,7 @@ import SpaceQuestionsPage from "./pages/SpaceQuestionsPage";
 const App: React.FC = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-       <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<HomePage />} /> {/* Home Page */}
         <Route path="/login" element={<Login />} />
@@ -47,13 +47,13 @@ const App: React.FC = () => {
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/revision" element={<SpaceQuestionsPage />} />
             <Route path="/history" element={<WordHistory />} />
-            <Route path="/favorites" element={<FavoriteWords/>} />
+            <Route path="/favorites" element={<FavoriteWords />} />
             <Route path="/test" element={<TestAddWordToHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/feed/:lastCount/:bookId" element={<WordFeedPage />} />
           </Route>
         </Route>
-            <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
     </ThemeProvider>

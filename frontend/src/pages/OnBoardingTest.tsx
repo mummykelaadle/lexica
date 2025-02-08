@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
+
+const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
 
 const OnboardingTest: React.FC = () => {
   const questions = [
@@ -75,6 +78,7 @@ const OnboardingTest: React.FC = () => {
   const [score, setScore] = useState(0);
   const [testCompleted, setTestCompleted] = useState(false);
   const [animationClass, setAnimationClass] = useState("");
+  const { getToken } = useAuth();
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
@@ -84,7 +88,7 @@ const OnboardingTest: React.FC = () => {
     if (selectedOption !== null) {
       setScore(prevScore => {
         const newScore = selectedOption === questions[currentQuestion].answer ? prevScore + 1 : prevScore;
-  
+
         if (currentQuestion === questions.length - 1) {
           setTestCompleted(true);
           if (newScore >= questions.length * 0.6) {
@@ -93,33 +97,39 @@ const OnboardingTest: React.FC = () => {
             setAnimationClass("shake");
           }
         }
-  
+
         return newScore;
       });
-  
+
+      setTestCompleted(true);
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setSelectedOption(null);
       }
     }
   };
-  
+
   // Send score to backend after test completion
   React.useEffect(() => {
     if (testCompleted) {
       sendScoreToBackend(score);
     }
-  }, [testCompleted]); 
-  
-
+  }, [testCompleted]);
   const sendScoreToBackend = async (score: number) => {
+    const token = await getToken();
     try {
-      await axios.post("http://localhost:5000/api/v1/user/onBoardingResult", { score }, { withCredentials: true });
+      await axios.post(`${baseUrl}/api/v1/user/onBoardingTestScore`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ score }),
+      })
     } catch (error) {
       console.error("Failed to send score to backend", error);
     }
   };
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="p-6 max-w-xl w-full bg-card text-foreground shadow-lg rounded-md">
@@ -133,8 +143,8 @@ const OnboardingTest: React.FC = () => {
                   <li
                     key={i}
                     className={`mt-1 p-2 rounded-md cursor-pointer transition-colors 
-                      ${selectedOption === option ? 
-                        (option === questions[currentQuestion].answer ? "bg-green-500 text-white" : "bg-red-500 text-white") 
+                      ${selectedOption === option ?
+                        (option === questions[currentQuestion].answer ? "bg-green-500 text-white" : "bg-red-500 text-white")
                         : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}
                     `}
                     onClick={() => handleSelect(option)}
@@ -150,9 +160,9 @@ const OnboardingTest: React.FC = () => {
                 onChange={(e) => setSelectedOption(e.target.value)}
               />
             )}
-            <button 
-              className="mt-4 p-2 bg-primary text-primary-foreground rounded-md transition-colors hover:bg-primary/90 disabled:opacity-50 w-full" 
-              onClick={handleNext} 
+            <button
+              className="mt-4 p-2 bg-primary text-primary-foreground rounded-md transition-colors hover:bg-primary/90 disabled:opacity-50 w-full"
+              onClick={handleNext}
               disabled={selectedOption === null}
             >
               {currentQuestion === questions.length - 1 ? "Submit Test" : "Next Question"}

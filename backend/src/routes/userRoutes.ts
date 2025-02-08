@@ -4,9 +4,9 @@ import userController from '../controllers/userController';
 const router = express.Router();
 
 //this route adds the word with wordId specified in request body to current user's history
-router.post('/history/add-word',userController.addWordToHistory);
+router.post('/history/add-word', userController.addWordToHistory);
 //this route returns all the word in current user's history
-router.get('/history',userController.getWordHistory);
+router.get('/history', userController.getWordHistory);
 
 
 /** ❤️ Favorite Words Routes */
@@ -24,10 +24,8 @@ router.delete("/favorites/:wordId", userController.removeWordFromFavorites);
 // Get all books of a user
 router.get("/books", userController.getBooksByUserId);
 
-
-// save user score
-router.post("/onBoardingResult", userController.saveUserScore);
-
 router.get("/level", userController.getUserLevel);
+
+router.get("/onBoardingTestScore", userController.getOnBoardingTestScore);
 
 export default router;

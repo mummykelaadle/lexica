@@ -6,7 +6,7 @@ import logger from '../utils/logger';
 import FavouriteWord from "../models/favouriteWord";
 import mongoose from "mongoose";
 import Book from '../models/bookModel';
-import OnboardingTest from '../models/onBoardingTest';
+import onBoardingTestScore from '../models/onBoardingTestScore';
 
 const addWordToHistory = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -207,30 +207,48 @@ const getBooksByUserId = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const saveUserScore = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { score } = req.body;
-    const { userId } = getAuth(req); // Get userId from Clerk
-
-    if (!userId || typeof score !== 'number') {
-      res.status(400).json({ error: 'userId and a valid numeric score are required' });
-      return;
+const getOnBoardingTestScore = async (req: Request, res: Response): Promise<void> => {
+  if (req.method === "POST") {
+    try {
+      const { userId } = getAuth(req);
+      if (!userId) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+      const { score } = req.body;
+      const updatedScore = await onBoardingTestScore.findOneAndUpdate(
+        { userId },
+        { score },
+        { upsert: true, new: true, returnDocument: "after" }
+      );
+      logger.info(`Onboarding test score updated for userId:${userId}`)
+      res.status(200).json({ message: "Score updated", updatedScore });
+    } catch (error) {
+      logger.error("Error updating onboarding test score:", error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
 
-    const newScore = new OnboardingTest({
-      userId,
-      score,
-      dateTaken: new Date(),
-    });
+  } else {
+    try {
+      const { userId } = getAuth(req);
 
-    await newScore.save();
-    res.status(201).json({ message: 'Score saved successfully!', score: newScore });
+      const score = await onBoardingTestScore.findOne({ userId }).lean();
 
-  } catch (error: any) {
-    console.error('Error saving score:', error.message);
-    res.status(500).json({ error: 'Failed to save score.' });
+      if (!score) {
+        res.status(404).json({ message: "No score found for this user.", score: null });
+        return;
+      }
+
+      logger.info(`Sending onboarding test score for userId:${userId}`)
+      res.status(200).json(score);
+    } catch (error) {
+      logger.error("Error fetching onboarding test score:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
+
 };
+
 
 // Define Levels
 const levels = [
@@ -294,5 +312,15 @@ const getUserLevel = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, getUserLevel, removeWordFromFavorites, isWordFavorite, getBooksByUserId, saveUserScore };
+export default {
+  addWordToHistory,
+  getWordHistory,
+  addWordToFavorites,
+  getFavouriteWords,
+  getUserLevel,
+  removeWordFromFavorites,
+  isWordFavorite,
+  getBooksByUserId,
+  getOnBoardingTestScore
+};
 
