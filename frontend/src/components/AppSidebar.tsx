@@ -4,7 +4,8 @@ import {
   ShieldQuestionIcon,
   CircleUser,
   Heart,
-  NotebookPen
+  NotebookPen,
+  ScanEye
 } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import {
@@ -51,6 +52,11 @@ const items = [
     title: "Revision",
     url: "/revision",
     icon: NotebookPen,
+  },
+  {
+    title: "Preview",
+    url: "/words",
+    icon: ScanEye,
   },
 ];
 
