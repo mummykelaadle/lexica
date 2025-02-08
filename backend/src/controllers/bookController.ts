@@ -4,6 +4,7 @@ import Page from '../models/pageModel';
 import mongoose, { Document } from 'mongoose';
 import logger from '../utils/logger';
 import { getAuth } from '@clerk/express'
+import { updateBookProgress } from '../utils/progress';
 
 /**
  * Retrieves a book by its ID along with its associated pages and words.
@@ -118,8 +119,11 @@ const getBookPages = (req: Request, res: Response) => {
       if (book.ownerId != userId) {
         return res.status(401).json({ message: "Unauthorized access. You are not the owner" });
       }
-      // Send the populated pages as the response
-      res.json({ pages: book.pages });
+
+      updateBookProgress(String(bookId),num_page * num_limit).then(()=>{
+        res.json({ pages: book.pages });
+      })
+      
     })
     .catch((error) => {
       logger.error(`Error fetching book with ID: ${bookId}`, error);
