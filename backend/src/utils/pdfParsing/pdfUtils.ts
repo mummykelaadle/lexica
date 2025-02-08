@@ -100,21 +100,53 @@ async function saveBookInDB(path: string, userId: string, title: string, locals:
   const textContents = await Promise.all(getTextContents(pages));
 
   const wordsInPages = getWordsInPages(textContents);
+  const uniqueWords = Array.from(new Set(wordsInPages.flat()));
 
-  // const proccessedPages: Promise<{ pageNo: number, wordIds: string[] }>[] = [];
+  const wordIds = await getWordIdsBatch(uniqueWords);
 
-  const proccessedPages = wordsInPages.map((words: string[], index: number) => {
-    return processPage(index, words, difficulty);
-  });
+  // {word: wordId}
+  const wordIdMap = new Map<string, string>();
 
-  await Promise.all(proccessedPages);
+  await Promise.all(wordIds.map(async (wordId, index) => {
+    const word = uniqueWords[index];
+    if (wordId) {
+      logger.info(`Word "${word}" already exists in the database.`);
+      wordIdMap.set(word, wordId); // Add to map
+      return;
+    }
+
+    try {
+      logger.info(`Fetching data for word: ${word}`);
+      const wordData = await fetchWordDetailsUsingDatamuse(word, difficulty);
+      logger.info(`Fetched data for word: ${word}`);
+      if (wordData) {
+        logger.info(`Creating new word record for word: ${word}`);
+        const newWordRecord = new Word(wordData);
+        const savedWord = await newWordRecord.save();
+        logger.info(`Word "${word}" saved to the database.`);
+        wordIdMap.set(word, savedWord._id.toString()); // Add to map
+      }
+    } catch (error) {
+      logger.error(`Error processing word '${word}': ${error}`);
+    }
+  }));
+
+  // const proccessedPages = wordsInPages.map((words: string[], index: number) => {
+  //   return processPage(index, words, difficulty);
+  // });
+
+  // await Promise.all(proccessedPages);
   // now all words are in db
   // TODO : put pages with their word id in DB
   // and return book
+  //
+  const proccessedPages = wordsInPages.map((words: string[], index: number) => {
+    return { pageNo: index + 1, wordIds: words.map((word: string) => wordIdMap.get(word)) };
+  });
 
   const pagePromisesDB = proccessedPages.map(
     async (processedPagePromise) => {
-      const { pageNo, wordIds } = await processedPagePromise;
+      const { pageNo, wordIds } = processedPagePromise;
       const page = new Page({
         pageNumber: pageNo,
         words: wordIds.filter((id) => id).map((wordId) => new Mongoose.Types.ObjectId(wordId)),
