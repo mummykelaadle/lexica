@@ -234,13 +234,13 @@ const saveUserScore = async (req: Request, res: Response): Promise<void> => {
 
 // Define Levels
 const levels = [
-  { name: "NewBie",  threshold: 0 },  // Just started, confused reader  
-  { name: "Novice",  threshold: 5 },  // Reads but doesn’t fully process  
-  { name: "Chad",  threshold: 10 },  // Spreads gyaan, sometimes unwanted  
-  { name: "Guruji",  threshold: 15 },  // Roasting people with literature facts  
-  { name: "Jethalal",  threshold: 20 },  // Rhymes like a pro  
-  { name: "Shakespeare",  threshold: 25 },  // Unexpected intellectual  
-  { name: "Shashi Tharoor",  threshold: 30 }  // Uses words no one understands  
+  { name: "NewBie", threshold: 0 },  // Just started, confused reader  
+  { name: "Novice", threshold: 5 },  // Reads but doesn’t fully process  
+  { name: "Chad", threshold: 10 },  // Spreads gyaan, sometimes unwanted  
+  { name: "Guruji", threshold: 15 },  // Roasting people with literature facts  
+  { name: "Jethalal", threshold: 20 },  // Rhymes like a pro  
+  { name: "Shakespeare", threshold: 25 },  // Unexpected intellectual  
+  { name: "Shashi Tharoor", threshold: 30 }  // Uses words no one understands  
 ];
 
 // Function to determine level
@@ -260,8 +260,8 @@ const getCurrentAndNextLevel = (wordCount: number) => {
   const progress =
     nextLevel.threshold > currentLevel.threshold
       ? ((wordCount - currentLevel.threshold) /
-          (nextLevel.threshold - currentLevel.threshold)) *
-        100
+        (nextLevel.threshold - currentLevel.threshold)) *
+      100
       : 100;
 
   return { currentLevel, nextLevel, progress };
@@ -294,5 +294,5 @@ const getUserLevel = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords,getUserLevel, removeWordFromFavorites, isWordFavorite,getBooksByUserId, saveUserScore };
+export default { addWordToHistory, getWordHistory, addWordToFavorites, getFavouriteWords, getUserLevel, removeWordFromFavorites, isWordFavorite, getBooksByUserId, saveUserScore };
 

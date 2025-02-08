@@ -18,12 +18,12 @@ const generateQuiz = async (req: Request, res: Response, next: NextFunction) => 
       });
     }
 
-       // Check if there are not enough words (less than 3) to generate the quiz
-       if (wordHistory.wordEntries.length < 4) {
-        return res.status(202).json({ //202 indicates that a request has been accepted for processing but has not yet been completed
-          message: "Not enough word history to generate a quiz. Add more words and try again."
-        });
-      }
+    // Check if there are not enough words (less than 3) to generate the quiz
+    if (wordHistory.wordEntries.length < 4) {
+      return res.status(202).json({ //202 indicates that a request has been accepted for processing but has not yet been completed
+        message: "Not enough word history to generate a quiz. Add more words and try again."
+      });
+    }
 
 
     // Generate quiz questions from the word history
@@ -116,7 +116,7 @@ const generateSpacedRepetitionQuiz = async (req: Request, res: Response) => {
           const options = fisherYatesShuffle([correctMeaning, ...incorrectOptions]);
 
           return {
-            id: (word._id as string).toString(),
+            id: (word._id).toString(),
             text: `What is the meaning of '${word.word}'?`,
             options,
             correctAnswer: correctMeaning,
@@ -190,4 +190,4 @@ async function generateIncorrectOptions(correctMeaning: string, word: string): P
 
 
 
-export default { generateQuiz ,generateSpacedRepetitionQuiz ,handleSpacedRepetitionResult};
+export default { generateQuiz, generateSpacedRepetitionQuiz, handleSpacedRepetitionResult };

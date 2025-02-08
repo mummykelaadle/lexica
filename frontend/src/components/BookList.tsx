@@ -5,6 +5,7 @@ import IBook from "@/interfaces/IBook";
 
 const BookList = () => {
   const { loading, error, books } = useGetUserBooks();
+  console.log(books);
 
   return (
     <div className='min-w-full m-auto'>
@@ -23,7 +24,7 @@ const BookList = () => {
               <Link to={`/feed/${0}/${book.bookId}`} key={index} className="relative flex-shrink-0 w-[250px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden group">
                 {/* Book image with hover effect */}
                 <div className="w-full h-full">
-                  <img //TODO:set actual image link once backend fn available
+                  <img
                     src={book.coverUrl}
                     alt={book.title}
                     className="w-full h-full object-cover rounded-t-lg group-hover:opacity-50 transition-opacity duration-300"
