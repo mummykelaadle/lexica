@@ -87,7 +87,7 @@ function DropZone() {
         <div
           {...getRootProps()}
           className={cn(
-            "w-[80vw] h-60 flex flex-col justify-center items-center p-5 border-4 border-dashed rounded-lg text-center mt-8", // Added border width (4px)
+            "w-[75vw] h-40 flex flex-col justify-center items-center p-5 border-4 border-dashed rounded-lg text-center my-2",  // Added border width (4px)
             isDragActive
               ? "bg-[#035FFE] text-white animate-pulse border-blue-500" // Blue border when active
               : "bg-slate-100/50 dark:bg-slate-800/80 text-slate-400 border-slate-300", // Light border when inactive
